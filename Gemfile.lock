@@ -6,6 +6,13 @@ GIT
       activerecord (>= 3.1, < 4.3)
       activesupport (>= 3.1, < 4.3)
 
+GIT
+  remote: https://github.com/savonrb/httpi.git
+  revision: bf28a13f51ee71598c0d2a50f7388d9924057d28
+  specs:
+    httpi (2.4.0)
+      rack
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -44,6 +51,9 @@ GEM
       minitest (~> 5.1)
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
+    akami (1.3.0)
+      gyoku (>= 0.4.0)
+      nokogiri
     arel (6.0.0)
     builder (3.2.2)
     byebug (4.0.5)
@@ -70,6 +80,8 @@ GEM
       rspec (>= 2.0)
     globalid (0.3.5)
       activesupport (>= 4.1.0)
+    gyoku (1.3.1)
+      builder (>= 2.1.2)
     haml (4.0.6)
       tilt
     haml-rails (0.9.0)
@@ -94,6 +106,8 @@ GEM
     json (1.8.2)
     loofah (2.0.1)
       nokogiri (>= 1.5.9)
+    macaddr (1.7.1)
+      systemu (~> 2.6.2)
     mail (2.6.3)
       mime-types (>= 1.16, < 3)
     method_source (0.8.2)
@@ -103,6 +117,7 @@ GEM
     multi_json (1.11.0)
     nokogiri (1.6.6.2)
       mini_portile (~> 0.6.0)
+    nori (2.5.0)
     pg (0.18.1)
     pry (0.10.1)
       coderay (~> 1.1.0)
@@ -173,6 +188,15 @@ GEM
       sprockets (>= 2.8, < 4.0)
       sprockets-rails (>= 2.0, < 4.0)
       tilt (~> 1.1)
+    savon (2.11.0)
+      akami (~> 1.2)
+      builder (>= 2.1.2)
+      gyoku (~> 1.2)
+      httpi (~> 2.3)
+      nokogiri (>= 1.4.0)
+      nori (~> 2.4)
+      uuid (~> 2.3.7)
+      wasabi (~> 3.4)
     seedbank (0.3.0)
     sexp_processor (4.5.0)
     shoulda-matchers (2.8.0)
@@ -184,6 +208,7 @@ GEM
       actionpack (>= 3.0)
       activesupport (>= 3.0)
       sprockets (>= 2.8, < 4.0)
+    systemu (2.6.5)
     thor (0.19.1)
     thread_safe (0.3.5)
     tilt (1.4.1)
@@ -194,6 +219,11 @@ GEM
     uglifier (2.7.1)
       execjs (>= 0.3.0)
       json (>= 1.8.0)
+    uuid (2.3.7)
+      macaddr (~> 1.0)
+    wasabi (3.5.0)
+      httpi (~> 2.0)
+      nokogiri (>= 1.4.2)
     yard (0.8.7.6)
 
 PLATFORMS
@@ -205,6 +235,7 @@ DEPENDENCIES
   factory_girl_rails
   factory_girl_rspec
   haml-rails
+  httpi!
   jbuilder (~> 2.0)
   jquery-rails
   pg
@@ -216,6 +247,7 @@ DEPENDENCIES
   rspec (~> 3.0.0)
   rspec-rails (~> 3.0.0)
   sass-rails (~> 5.0)
+  savon (~> 2.0)
   seed-fu!
   seedbank
   shoulda-matchers
