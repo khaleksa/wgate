@@ -1,86 +1,145 @@
 class PaynetsController < ApplicationController
-  skip_before_action :verify_authenticity_token, if: :json_request?
+  skip_before_action :verify_authenticity_token
   # force_ssl
 
-  MESSAGES = {
-      0 => 'Успешно.',
-      102 => 'Системная ошибка.',
-      103 => 'Транзакция не найдена.',
-      201 => 'Транзакция уже существует.',
-      202 => 'Транзакция уже отменена.',
-      302 => 'Клиент не найден.',
-      411 => 'Не заданы один или несколько обязательных параметров.',
-      412 => 'Неверный логин.',
-      413 => 'Неверная сумма. Минимальная сумма - 1000 сум.',
-      414 => 'Неверный формат даты и времени.'
+  STATUS_MESSAGES = {
+    0 => 'Успешно.',
+    102 => 'Системная ошибка.',
+    103 => 'Транзакция не найдена.',
+    201 => 'Транзакция уже существует.',
+    202 => 'Транзакция уже отменена.',
+    302 => 'Клиент не найден.',
+    411 => 'Не заданы один или несколько обязательных параметров.',
+    412 => 'Неверный логин.',
+    413 => 'Неверная сумма. Минимальная сумма - 1000 сум.',
+    414 => 'Неверный формат даты и времени.'
   }
 
+  XML_HEADER = "<?xml version='1.0' encoding='UTF-8'?>\n"
+
   def wsdl
-    path = File.join Rails.public_path, 'ProviderWebService.wsdl'
-    xml = File.read path
-    render text: xml.html_safe, content_type: 'text/xml'
+    wsdl_path = File.join Rails.public_path, 'ProviderWebService.wsdl'
+    wsdl_file = File.read wsdl_path
+    render text: wsdl_file.html_safe, content_type: 'text/xml'
   end
 
   def action
-    binding.pry
-
-    action_header = request.headers['SOAPAction']
-    action_name = action_header.gsub('urn:', '').gsub('"', '').underscore
+    action_name = request.headers['SOAPAction'].gsub('urn:', '').gsub('"', '').underscore
+    # params = Hash.from_xml(request.body.read)
 
     if self.respond_to?(action_name, true)
-      xml = "<?xml version='1.0' encoding='UTF-8'?>\n"
-      response = xml + send(action_name)
+      response = XML_HEADER + send(action_name)
       render text: response, content_type: 'text/xml'
     else
       head :not_found
     end
   end
 
-  private
-
   def perform_transaction
-    timestamp = Time.now
-    transaction_id = 0
-
     begin
+      params = Hash.from_xml(request.body.read)
       perform_tran_params = params['Envelope']['Body']['PerformTransactionArguments']
+
       @paynet_status = 0
-      pt = PaynetTransaction.create! account_id: perform_tran_params['parameters']['paramValue'],
-                                     amount: perform_tran_params['amount'],
-                                     message: MESSAGES[@paynet_status],
-                                     paynet_timestamp: perform_tran_params['transactionTime'],
-                                     paynet_transaction_id: perform_tran_params['transactionId'],
-                                     service_number: perform_tran_params['serviceId'],
-                                     paynet_status: @paynet_status,
-                                     status: 1,
-                                     user_name: perform_tran_params['username'],
-                                     password: perform_tran_params['password']
-      transaction_id = pt.id
-      timestamp = pt.created_at
+      create_params = {
+        account_id: perform_tran_params['parameters']['paramValue'].to_i,
+        transaction_id: perform_tran_params['transactionId'],
+        transaction_timestamp: perform_tran_params['transactionTime'],
+        service_id: perform_tran_params['serviceId'].to_i,
+        state_status: PaynetTransaction::STATUS[:commit],
+        response_status: @paynet_status,
+        response_message: STATUS_MESSAGES[@paynet_status],
+        amount: perform_tran_params['amount'].to_i,
+        user_name: perform_tran_params['username'],
+        password: perform_tran_params['password']
+      }
+
+      transaction = PaynetTransaction.create! create_params
+
+      transaction_id = transaction.id
+      timestamp = transaction.created_at
     rescue Exception => err
       @paynet_status = 102
+      transaction_id = 0
+      timestamp = Time.now
     ensure
       return envelope('PerformTransactionResult', pack_params(
-                                                    errorMsg: MESSAGES[@paynet_status],
+                                                    errorMsg: STATUS_MESSAGES[@paynet_status],
                                                     status: @paynet_status,
                                                     timeStamp: timestamp.to_s(:w3cdtf),
                                                     providerTrnId: transaction_id))
     end
   end
 
+  def check_transaction
+    timestamp = Time.now
+
+    begin
+      params = Hash.from_xml(request.body.read)
+      check_tran_params = params['Envelope']['Body']['CheckTransactionArguments']
+      transaction = PaynetTransaction.find_by_transaction_id(check_tran_params['transactionId'])
+      if transaction
+        response_status = 0
+        transaction_id = transaction.id
+        transaction_state = transaction.state_status
+        state_error_status = transaction.response_status
+        state_error_message = transaction.response_message
+      else
+        #TODO ??? check values of params
+        response_status = 103
+        transaction_id = 0
+        transaction_state = 0
+        state_error_status = 0
+        state_error_message = ''
+      end
+    rescue Exception => err
+      response_status = 102
+      transaction_id = 0
+    ensure
+      return envelope('CheckTransactionResult', pack_params(
+                                                  errorMsg: STATUS_MESSAGES[response_status],
+                                                  status: response_status,
+                                                  timeStamp: timestamp.to_s(:w3cdtf),
+                                                  providerTrnId: transaction_id,
+                                                  transactionState: transaction_state,
+                                                  transactionStateErrorStatus: state_error_status,
+                                                  transactionStateErrorMsg: state_error_message))
+    end
+  end
+
+  def cancel_transaction
+    timestamp = Time.now
+    state = 0
+    begin
+      @paynet_status = 0
+      params = Hash.from_xml(request.body.read)
+      cancel_tran_params = params['Envelope']['Body']['CancelTransactionArguments']
+      transaction = PaynetTransaction.find_by_transaction_id(cancel_tran_params['transactionId'])
+      if transaction
+        transaction.cancel
+        state = transaction.state_status
+      end
+    rescue Exception => err
+      @paynet_status = 102
+    ensure
+        return envelope('CancelTransactionResult', pack_params(
+                                                     errorMsg: STATUS_MESSAGES[@paynet_status],
+                                                     status: @paynet_status,
+                                                     timeStamp: timestamp.to_s(:w3cdtf),
+                                                     transactionState: state))
+    end
+  end
+
+  private
   def pack_params(args = {})
     args.map { |k, v| "<#{k}>#{v}</#{k}>\n" }.join
   end
 
   def envelope(name, body)
     "<soapenv:Envelope xmlns:soapenv='http://schemas.xmlsoap.org/soap/envelope/'>\n<soapenv:Body>\n" +
-        "<ns1:#{name} xmlns:ns1='http://uws.provider.com/' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>\n" +
-        body +
-        "</ns1:#{name}>\n" +
-        "</soapenv:Body>\n</soapenv:Envelope>"
-  end
-
-  def json_request?
-    true
+      "<ns1:#{name} xmlns:ns1='http://uws.provider.com/' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>\n" +
+      body +
+      "</ns1:#{name}>\n" +
+      "</soapenv:Body>\n</soapenv:Envelope>"
   end
 end
