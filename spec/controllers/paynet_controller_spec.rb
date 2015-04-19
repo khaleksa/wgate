@@ -103,4 +103,42 @@ describe PaynetsController do
       expect(response_data[:transaction_state_error_msg]).to eq(status_ok_msg)
     end
   end
+
+  describe 'soap method: GetStatement' do
+    let(:transaction_status) { PaynetTransaction::STATUS[:commit] }
+    let!(:transaction_1) { create_paynet_transaction_at(4.days.ago, transaction_id: 111, state_status: transaction_status, amount: 1000) }
+    let!(:transaction_2) { create_paynet_transaction_at(3.days.ago, transaction_id: 222, state_status: transaction_status, amount: 2000) }
+    let!(:transaction_3) { create_paynet_transaction_at(1.days.ago, transaction_id: 333, state_status: transaction_status, amount: 3000) }
+
+    let(:params) do
+      {
+          password: 'pwd',
+          usernamer: 'user',
+          dateFrom: 5.days.ago.to_s(:w3cdtf),
+          dateTo: 2.days.ago.to_s(:w3cdtf),
+          serviceId: 1,
+          onlyTransactionId: false,
+          parameters: { paramKey: 'reason', paramValue: '' }
+      }
+    end
+    let!(:response) { client.call(:get_statement, message: params) }
+    let(:response_data) { response.body[:get_statement_result] }
+
+    it 'returns valid response' do
+      expect(response_data[:error_msg]).to eq 'Успешно.'
+      expect(response_data[:status].to_i).to eq 0
+      expect(response_data.include?(:time_stamp)).to be_truthy
+    end
+
+    let(:statements) { response_data[:statements] }
+    it 'returns transaction data' do
+      expect(statements.size).to eq(2)
+      expect(statements[0]).to  eq(
+                                    :amount           => transaction_1.amount.to_s,
+                                    :provider_trn_id  => transaction_1.id.to_s,
+                                    :transaction_id   => transaction_1.transaction_id,
+                                    :transaction_time => transaction_1.created_at.to_s(:w3cdtf)
+                                   )
+    end
+  end
 end

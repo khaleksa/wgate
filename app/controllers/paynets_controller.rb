@@ -130,6 +130,36 @@ class PaynetsController < ApplicationController
     end
   end
 
+  def get_statements(date_from, date_to, only_transaction_id)
+    transactions = PaynetTransaction.where(created_at: date_from..date_to, state_status: PaynetTransaction::STATUS[:commit]).order(:created_at)
+    transactions.map do |t|
+      a = {}
+      a[:amount] = t.amount unless only_transaction_id
+      a[:providerTrnId] = t.id
+      a[:transactionId] = t.transaction_id unless only_transaction_id
+      a[:transactionTime] = t.created_at.to_s(:w3cdtf) unless only_transaction_id
+      '<statements>'+pack_params(a)+'</statements>'
+    end.join
+  end
+
+  def get_statement
+    begin
+      paynet_status = 0
+
+      params = Hash.from_xml(request.body.read)
+      get_statement_params = params['Envelope']['Body']['GetStatementArguments']
+      transactions = get_statements(get_statement_params['dateFrom'], get_statement_params['dateTo'], to_bool(get_statement_params['onlyTransactionId']))
+    rescue Exception => err
+      paynet_status = 102
+      transactions = ''
+    ensure
+      args = pack_params(errorMsg: STATUS_MESSAGES[paynet_status],
+                         status: paynet_status,
+                         timeStamp: DateTime.now.to_s(:w3cdtf))
+      return envelope('GetStatementResult', args + transactions)
+    end
+  end
+  
   private
   def pack_params(args = {})
     args.map { |k, v| "<#{k}>#{v}</#{k}>\n" }.join
@@ -141,5 +171,11 @@ class PaynetsController < ApplicationController
       body +
       "</ns1:#{name}>\n" +
       "</soapenv:Body>\n</soapenv:Envelope>"
+  end
+
+  def to_bool(text)
+    return true if text =~ (/^(true)$/i)
+    return false if text =~ (/^(false)$/i)
+    raise ArgumentError.new("invalid value for Boolean: \"#{text}\"")
   end
 end

@@ -33,6 +33,8 @@ end
 group :test do
   gem 'shoulda-matchers'
 
+  gem 'timecop', :require => false
+
   gem 'httpi', :git => 'https://github.com/savonrb/httpi.git'
   gem 'savon', '~> 2.0'
 end
