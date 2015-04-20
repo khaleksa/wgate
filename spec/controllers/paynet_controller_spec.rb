@@ -10,7 +10,22 @@ describe PaynetsController do
   #  config.render_views
   # controller spec vs request spec
 
+  let(:remote_ip) { '127.0.0.1' }
   let(:client) { Savon::Client.new({ :wsdl => "http://application/paynet/wsdl" }) }
+
+  before do
+    ActionDispatch::Request.any_instance.stub(:remote_ip).and_return(remote_ip)
+  end
+
+  # context 'when request comes from unknown ip' do
+  #   let(:remote_ip) { '10.20.30.40' }
+  #
+  #   it do
+  #     get "wsdl"
+  #     binding.pry
+  #     should respond_with 403
+  #   end
+  # end
 
   describe 'soap method: PerformTransaction' do
     let(:params) do
@@ -18,7 +33,7 @@ describe PaynetsController do
         password: 'pwd',
         username: 'user',
         amount: 150000,
-        parameters: { paramKey: 'agent_id', paramValue: 2222 },
+        parameters: { paramKey: 'account_id', paramValue: 2222 },
         serviceId: 1,
         transactionId: 437,
         transactionTime: '2011-04-26T18:07:22'
@@ -141,4 +156,41 @@ describe PaynetsController do
                                    )
     end
   end
+
+  # describe 'soap method: GetInformation' do
+  #   let(:transaction_status) { PaynetTransaction::STATUS[:commit] }
+  #   let!(:transaction_1) { create_paynet_transaction_at(4.days.ago, transaction_id: 111, state_status: transaction_status, amount: 1000) }
+  #   let!(:transaction_2) { create_paynet_transaction_at(3.days.ago, transaction_id: 222, state_status: transaction_status, amount: 2000) }
+  #   let!(:transaction_3) { create_paynet_transaction_at(1.days.ago, transaction_id: 333, state_status: transaction_status, amount: 3000) }
+  #
+  #   let(:params) do
+  #     {
+  #         password: 'pwd',
+  #         usernamer: 'user',
+  #         parameters: { paramKey: 'client_id', paramValue: '1234' },
+  #         serviceId: 1
+  #     }
+  #   end
+  #   let!(:response) { client.call(:get_information, message: params) }
+  #   let(:response_data) { response.body[:get_statement_result] }
+  #
+  #   it 'returns valid response' do
+  #     expect(response_data[:error_msg]).to eq 'Успешно.'
+  #     expect(response_data[:status].to_i).to eq 0
+  #     expect(response_data.include?(:time_stamp)).to be_truthy
+  #   end
+  #
+  #   let(:parameters) { response_data[:parameters] }
+  #   it 'returns client data' do
+  #     expect(parameters.size).to eq(2)
+  #     expect(parameters[0]).to  eq(
+  #                                   :param_key   => 'balance',
+  #                                   :param_value => '111'
+  #                               )
+  #     expect(parameters[1]).to  eq(
+  #                                   :param_key   => 'name',
+  #                                   :param_value => 'Bob'
+  #                               )
+  #   end
+  # end
 end

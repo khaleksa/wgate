@@ -2,17 +2,19 @@ class PaynetsController < ApplicationController
   skip_before_action :verify_authenticity_token
   # force_ssl
 
+  before_filter :check_ip
+
   STATUS_MESSAGES = {
-    0 => 'Успешно.',
-    102 => 'Системная ошибка.',
-    103 => 'Транзакция не найдена.',
-    201 => 'Транзакция уже существует.',
-    202 => 'Транзакция уже отменена.',
-    302 => 'Клиент не найден.',
-    411 => 'Не заданы один или несколько обязательных параметров.',
-    412 => 'Неверный логин.',
-    413 => 'Неверная сумма. Минимальная сумма - 1000 сум.',
-    414 => 'Неверный формат даты и времени.'
+      0 => 'Успешно.',
+      102 => 'Системная ошибка.',
+      103 => 'Транзакция не найдена.',
+      201 => 'Транзакция уже существует.',
+      202 => 'Транзакция уже отменена.',
+      302 => 'Клиент не найден.',
+      411 => 'Не заданы один или несколько обязательных параметров.',
+      412 => 'Неверный логин.',
+      413 => 'Неверная сумма. Минимальная сумма - 1000 сум.',
+      414 => 'Неверный формат даты и времени.'
   }
 
   XML_HEADER = "<?xml version='1.0' encoding='UTF-8'?>\n"
@@ -37,8 +39,8 @@ class PaynetsController < ApplicationController
 
   def perform_transaction
     begin
-      params = Hash.from_xml(request.body.read)
-      perform_tran_params = params['Envelope']['Body']['PerformTransactionArguments']
+    params = Hash.from_xml(request.body.read)
+    perform_tran_params = params['Envelope']['Body']['PerformTransactionArguments']
 
       @paynet_status = 0
       create_params = {
@@ -177,5 +179,10 @@ class PaynetsController < ApplicationController
     return true if text =~ (/^(true)$/i)
     return false if text =~ (/^(false)$/i)
     raise ArgumentError.new("invalid value for Boolean: \"#{text}\"")
+  end
+
+  def check_ip
+    ip_list = PAYNET_CONFIG[:ip_list]
+    raise 'Not allowed' until ip_list.include? request.remote_ip
   end
 end
