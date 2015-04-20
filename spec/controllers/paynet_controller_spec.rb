@@ -10,6 +10,8 @@ describe PaynetsController do
   #  config.render_views
   # controller spec vs request spec
 
+  let(:user_tom) { 'TomUz2014' }
+  let(:psw_tom) { 'tom10v000317' }
   let(:remote_ip) { '127.0.0.1' }
   let(:client) { Savon::Client.new({ :wsdl => "http://application/paynet/wsdl" }) }
 
@@ -30,8 +32,8 @@ describe PaynetsController do
   describe 'soap method: PerformTransaction' do
     let(:params) do
       {
-        password: 'pwd',
-        username: 'user',
+        password: psw_tom,
+        username: user_tom,
         amount: 150000,
         parameters: { paramKey: 'account_id', paramValue: 2222 },
         serviceId: 1,
@@ -56,19 +58,19 @@ describe PaynetsController do
       expect(transaction.state_status).to eq(1)
       expect(transaction.amount).to eq(150000)
       expect(transaction.account_id).to eq(2222)
-      expect(transaction.user_name).to eq('user')
-      expect(transaction.password).to eq('pwd')
+      expect(transaction.user_name).to eq(user_tom)
+      expect(transaction.password).to eq(psw_tom)
     end
   end
 
   describe 'soap method: CancelTransaction' do
     let(:account) { 123456789 }
     let(:transaction_id) { '123456' }
-    let!(:transaction) { FactoryGirl.create(:paynet_transaction, transaction_id: transaction_id, account_id: account) }
+    let!(:transaction) { FactoryGirl.create(:paynet_transaction, transaction_id: transaction_id, account_id: account, state_status: PaynetTransaction::STATUS[:commit]) }
     let(:params) do
       {
-        password: 'pwd',
-        usernamer: 'user',
+        password: psw_tom,
+        username: user_tom,
         serviceId: 1,
         transactionId: transaction_id,
         parameters: { paramKey: 'agent_id', paramValue: account }
@@ -97,8 +99,8 @@ describe PaynetsController do
     let!(:transaction) { FactoryGirl.create(:paynet_transaction, transaction_id: transaction_id, state_status: 1, response_status: status_ok, response_message: status_ok_msg) }
     let(:params) do
       {
-        password: 'pwd',
-        username: 'user',
+        password: psw_tom,
+        username: user_tom,
         serviceId: 1,
         transactionId: transaction_id,
         transactionTime: '2011-04-26T18:07:22',
@@ -127,8 +129,8 @@ describe PaynetsController do
 
     let(:params) do
       {
-          password: 'pwd',
-          usernamer: 'user',
+          password: psw_tom,
+          username: user_tom,
           dateFrom: 5.days.ago.to_s(:w3cdtf),
           dateTo: 2.days.ago.to_s(:w3cdtf),
           serviceId: 1,
@@ -165,8 +167,8 @@ describe PaynetsController do
   #
   #   let(:params) do
   #     {
-  #         password: 'pwd',
-  #         usernamer: 'user',
+  #         password: 'tom10v000317',
+  #         usernamer: 'TomUz2014',
   #         parameters: { paramKey: 'client_id', paramValue: '1234' },
   #         serviceId: 1
   #     }
