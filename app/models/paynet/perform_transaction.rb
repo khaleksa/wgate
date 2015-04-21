@@ -24,6 +24,7 @@ module Paynet
         timeStamp: timestamp.to_s(:w3cdtf),
         providerTrnId: transaction_id
       }
+      log(transaction_attributes, response_params)
       return envelope('PerformTransactionResult', pack_params(response_params))
     end
 
@@ -54,6 +55,11 @@ module Paynet
        user_name: method_params['username'],
        password: method_params['password']
      }
+    end
+
+    def log(tran_attr, response_params)
+      data = "#{Time.zone.now} - transaction_attr:#{tran_attr.to_s} response_params:#{response_params.to_s}"
+      ::Logger.new("#{Rails.root}/log/paynet_perform_tran_#{Time.zone.now.month}_#{Time.zone.now.year}.log").info(data)
     end
   end
 

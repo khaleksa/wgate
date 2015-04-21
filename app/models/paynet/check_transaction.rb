@@ -39,6 +39,7 @@ module Paynet
         transactionStateErrorStatus: state_error_status,
         transactionStateErrorMsg: state_error_message
       }
+      log(paynet_transaction_id, response_params)
       return envelope('CheckTransactionResult', pack_params(response_params))
     end
 
@@ -52,6 +53,11 @@ module Paynet
 
     def paynet_transaction_id
       method_arguments['transactionId']
+    end
+
+    def log(tran_id, response_params)
+      data = "#{Time.zone.now} - transaction_id:#{tran_id.to_s} response_params:#{response_params.to_s}"
+      ::Logger.new("#{Rails.root}/log/paynet_check_tran_#{Time.zone.now.month}_#{Time.zone.now.year}.log").info(data)
     end
   end
 

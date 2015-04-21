@@ -12,7 +12,7 @@ module Paynet
       state = 0
       begin
         if @response_status == 0
-          transaction = PaynetTransaction.find_by_transaction_id(method_arguments['transactionId'])
+          transaction = PaynetTransaction.find_by_transaction_id(paynet_transaction_id)
           if transaction
             if (transaction.state_status == PaynetTransaction::STATUS[:commit])
               transaction.cancel
@@ -31,6 +31,7 @@ module Paynet
           timeStamp: timestamp.to_s(:w3cdtf),
           transactionState: state
         }
+        log(paynet_transaction_id, response_params)
         return envelope('CancelTransactionResult', pack_params(response_params))
       end
     end
@@ -48,23 +49,32 @@ module Paynet
       return 0
     end
 
+    #TODO:: can_cancel?
     def can_cancel?
-      agn = Agency.find transaction.account_id
-      time_stamp = transaction.created_at
-      ten_days = time_stamp + 10.days
-      third = time_stamp.at_beginning_of_month + 2.days
-      third+= 1.month if time_stamp.day >= 3
-      days_ago = (Time.now - time_stamp) / 1.day
-      if time_stamp <= ten_days && time_stamp + days_ago.days < third
-        ActiveRecord::Base.transaction do
-          agn.withdrawal!(transaction.amount / 100)
-          transaction.cancel!
-        end
-        state = 2
-      end
-      0
+      # agn = Agency.find transaction.account_id
+      # time_stamp = transaction.created_at
+      # ten_days = time_stamp + 10.days
+      # third = time_stamp.at_beginning_of_month + 2.days
+      # third+= 1.month if time_stamp.day >= 3
+      # days_ago = (Time.now - time_stamp) / 1.day
+      # if time_stamp <= ten_days && time_stamp + days_ago.days < third
+      #   ActiveRecord::Base.transaction do
+      #     agn.withdrawal!(transaction.amount / 100)
+      #     transaction.cancel!
+      #   end
+      #   state = 2
+      # end
+      # 0
     end
 
+    def paynet_transaction_id
+      method_arguments['transactionId']
+    end
+
+    def log(tran_id, response_params)
+      data = "#{Time.zone.now} - transaction_id:#{tran_id.to_s} response_params:#{response_params.to_s}"
+      ::Logger.new("#{Rails.root}/log/paynet_cancel_tran_#{Time.zone.now.month}_#{Time.zone.now.year}.log").info(data)
+    end
   end
 
 end

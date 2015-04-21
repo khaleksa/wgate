@@ -16,7 +16,9 @@ module Paynet
       transactions = ''
     ensure
       args = pack_params(errorMsg: STATUS_MESSAGES[@response_status], status: @response_status, timeStamp: DateTime.now.to_s(:w3cdtf))
-      return envelope('GetStatementResult', args + transactions)
+      response_params = args + transactions
+      log(response_params)
+      return envelope('GetStatementResult', response_params)
     end
 
     private
@@ -50,6 +52,11 @@ module Paynet
 
     def only_transaction_id?
       to_bool(method_arguments['onlyTransactionId'])
+    end
+
+    def log(response_params)
+      data = "#{Time.zone.now} - date_from:#{date_from.to_s} date_to:#{date_to.to_s} only_tran_id:#{only_transaction_id?.to_s} response_params:#{response_params.to_s}"
+      ::Logger.new("#{Rails.root}/log/paynet_get_statement_#{Time.zone.now.month}_#{Time.zone.now.year}.log").info(data)
     end
   end
 
