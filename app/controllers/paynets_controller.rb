@@ -23,27 +23,27 @@ class PaynetsController < ApplicationController
     end
   end
 
+  private
   def perform_transaction
     params = Hash.from_xml(request.body.read)
-    return Paynet::TransactionBuilder.new(params).build_response
+    return Paynet::PerformTransaction.new(params).build_response
   end
 
   def check_transaction
     params = Hash.from_xml(request.body.read)
-    return Paynet::TransactionCheck.new(params).build_response
+    return Paynet::CheckTransaction.new(params).build_response
   end
 
   def cancel_transaction
     params = Hash.from_xml(request.body.read)
-    return Paynet::TransactionCancel.new(params).build_response
+    return Paynet::CancelTransaction.new(params).build_response
   end
 
   def get_statement
     params = Hash.from_xml(request.body.read)
-    return Paynet::TransactionStatements.new(params).build_response
+    return Paynet::GetStatement.new(params).build_response
   end
   
-  private
   def check_ip
     ip_list = PAYNET_CONFIG[:ip_list]
     raise 'Not allowed' until ip_list.include? request.remote_ip

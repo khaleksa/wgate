@@ -1,6 +1,6 @@
 module Paynet
 
-  class TransactionCancel < TransactionBase
+  class CancelTransaction < SoapMethodBase
 
     def initialize(params)
       @params = params
@@ -25,11 +25,13 @@ module Paynet
       rescue Exception => err
         @response_status = 102
       ensure
-        return envelope('CancelTransactionResult', pack_params(
-                                                     errorMsg: STATUS_MESSAGES[@response_status],
-                                                     status: @response_status,
-                                                     timeStamp: timestamp.to_s(:w3cdtf),
-                                                     transactionState: state))
+        response_params = {
+          errorMsg: STATUS_MESSAGES[@response_status],
+          status: @response_status,
+          timeStamp: timestamp.to_s(:w3cdtf),
+          transactionState: state
+        }
+        return envelope('CancelTransactionResult', pack_params(response_params))
       end
     end
 
@@ -45,6 +47,24 @@ module Paynet
 
       return 0
     end
+
+    def can_cancel?
+      agn = Agency.find transaction.account_id
+      time_stamp = transaction.created_at
+      ten_days = time_stamp + 10.days
+      third = time_stamp.at_beginning_of_month + 2.days
+      third+= 1.month if time_stamp.day >= 3
+      days_ago = (Time.now - time_stamp) / 1.day
+      if time_stamp <= ten_days && time_stamp + days_ago.days < third
+        ActiveRecord::Base.transaction do
+          agn.withdrawal!(transaction.amount / 100)
+          transaction.cancel!
+        end
+        state = 2
+      end
+      0
+    end
+
   end
 
 end

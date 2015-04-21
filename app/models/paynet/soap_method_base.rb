@@ -2,7 +2,7 @@
 
 module Paynet
 
-  class TransactionBase
+  class SoapMethodBase
     STATUS_MESSAGES = {
         0 => 'Успешно.',
         102 => 'Системная ошибка.',

@@ -1,6 +1,6 @@
 module Paynet
 
-  class TransactionBuilder < TransactionBase
+  class PerformTransaction < SoapMethodBase
 
     def initialize(params)
       @params = params

@@ -2,7 +2,7 @@
 
 module Paynet
 
-  class TransactionStatements < TransactionBase
+  class GetStatement < SoapMethodBase
 
     def initialize(params)
       @params = params

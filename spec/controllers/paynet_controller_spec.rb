@@ -12,7 +12,7 @@ describe PaynetsController do
 
   let(:user_tom) { 'TomUz2014' }
   let(:psw_tom) { 'tom10v000317' }
-  let(:remote_ip) { '127.0.0.1' }
+  let(:remote_ip) { '213.230.106.113' }
   let(:client) { Savon::Client.new({ :wsdl => "http://application/paynet/wsdl" }) }
 
   before do
@@ -55,7 +55,7 @@ describe PaynetsController do
     it 'create PaymentTransaction' do
       expect{ response }.to change{ PaynetTransaction.all.size }.from(0).to(1)
       expect(transaction.service_id).to eq(1)
-      expect(transaction.state_status).to eq(1)
+      expect(transaction.state_status).to eq(PaynetTransaction::STATUS[:commit])
       expect(transaction.amount).to eq(150000)
       expect(transaction.account_id).to eq(2222)
       expect(transaction.user_name).to eq(user_tom)
@@ -88,7 +88,7 @@ describe PaynetsController do
 
     it 'cancel Payment Transaction state status' do
       transaction.reload
-      expect(transaction.state_status).to eq(2)
+      expect(transaction.state_status).to eq(PaynetTransaction::STATUS[:cancelled])
     end
   end
 
@@ -115,9 +115,9 @@ describe PaynetsController do
       expect(response_data[:status].to_i).to eq status_ok
       expect(response_data.include?(:time_stamp)).to be_truthy
       expect(response_data[:provider_trn_id].to_i).to eq(transaction.id)
-      expect(response_data[:transaction_state].to_i).to eq(1)
-      expect(response_data[:transaction_state_error_status].to_i).to eq(status_ok)
-      expect(response_data[:transaction_state_error_msg]).to eq(status_ok_msg)
+      expect(response_data[:transaction_state].to_i).to eq(transaction.state_status)
+      expect(response_data[:transaction_state_error_status]).to eq('Success')
+      expect(response_data.include?(:transaction_state_error_msg)).to be_truthy
     end
   end
 
