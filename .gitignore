@@ -31,3 +31,5 @@ db/structure.sql
 /public/spec_results.html
 
 /public/uploads/*
+
+/config/deploy/

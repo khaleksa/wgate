@@ -7,4 +7,6 @@ Rails.application.routes.draw do
 
   get 'paynet/wsdl', to: 'paynets#wsdl'
   post 'paynet/action', to: 'paynets#action'
+
+  get 'test/echo', to: 'test#echo_params'
 end

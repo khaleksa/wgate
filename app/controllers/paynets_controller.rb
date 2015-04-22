@@ -1,6 +1,6 @@
 class PaynetsController < ApplicationController
   skip_before_action :verify_authenticity_token
-  # force_ssl
+  force_ssl
 
   before_filter :check_ip
 

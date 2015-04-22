@@ -2,7 +2,7 @@
 lock '3.1.0'
 
 set :application, 'paysys'
-set :repo_url, 'https://khaleksa@bitbucket.org/khaleksa/paysys.git'
+set :repo_url, 'git@bitbucket.org:khaleksa/paysys.git'
 
 # Default branch is :master
 # ask :branch, proc { `git rev-parse --abbrev-ref HEAD`.chomp }
@@ -10,8 +10,10 @@ set :repo_url, 'https://khaleksa@bitbucket.org/khaleksa/paysys.git'
 # Default deploy_to directory is /var/www/my_app
 set :deploy_to, '/home/Alexandra/paysys'
 
+set :use_sudo, true
+
 # Default value for :scm is :git
-# set :scm, :git
+set :scm, :git
 
 # Default value for :format is :pretty
 set :format, :pretty
