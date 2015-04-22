@@ -7,4 +7,6 @@ Rails.application.routes.draw do
 
   get 'paynet/wsdl', to: 'paynets#wsdl'
   post 'paynet/action', to: 'paynets#action'
+
+  post 'click/sync', to: 'click#sync'
 end
