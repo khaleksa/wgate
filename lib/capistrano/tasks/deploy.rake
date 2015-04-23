@@ -13,7 +13,7 @@ namespace :deploy do
     desc "#{command} Unicorn server."
     task command do
       on roles(:app) do
-        execute "/etc/init.d/unicorn_#{fetch(:application)} #{command}"
+        execute "/etc/init.d/unicorn.#{fetch(:application)} #{command}"
       end
     end
   end
