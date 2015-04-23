@@ -1,6 +1,6 @@
-root = "/var/www/paysys/current"
+root = "/var/www/paysys"
 
-working_directory root
+working_directory "#{root}/current"
 pid "#{root}/run/unicorn.pid"
 stderr_path "#{root}/log/unicorn.log"
 stdout_path "#{root}/log/unicorn.log"

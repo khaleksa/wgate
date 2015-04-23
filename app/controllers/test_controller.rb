@@ -4,4 +4,8 @@ class TestController < ApplicationController
   def echo_params
     render json: params
   end
+
+  def index
+
+  end
 end
