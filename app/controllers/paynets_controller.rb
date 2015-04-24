@@ -1,6 +1,6 @@
 class PaynetsController < ApplicationController
   skip_before_action :verify_authenticity_token
-  force_ssl
+  force_ssl if: :ssl_configured?
 
   before_filter :check_ip
 
@@ -49,5 +49,9 @@ class PaynetsController < ApplicationController
   def log(action_name, request)
     data = "#{Time.zone.now} - action:#{action_name.to_s} request:#{request.to_s}"
     ::Logger.new("#{Rails.root}/log/paynet_controller_#{Time.zone.now.month}_#{Time.zone.now.year}.log").info(data)
+  end
+
+  def ssl_configured?
+    !Rails.env.development?
   end
 end
