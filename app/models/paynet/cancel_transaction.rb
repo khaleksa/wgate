@@ -22,7 +22,7 @@ module Paynet
             state = transaction.state_status
           end
         end
-      rescue Exception => err
+      rescue
         @response_status = 102
       ensure
         response_params = {

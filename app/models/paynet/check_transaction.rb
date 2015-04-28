@@ -23,7 +23,7 @@ module Paynet
         state_error_status = 'Error'
         state_error_message = "Transaction with id=#{paynet_transaction_id} wasn't found."
       end
-    rescue Exception => err
+    rescue
       @response_status = 102
       transaction_id = 0
       transaction_state = PaynetTransaction::STATUS[:error]

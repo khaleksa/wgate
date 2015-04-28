@@ -15,7 +15,7 @@ module Paynet
         transaction_id = transaction.id
         timestamp = transaction.created_at
       end
-    rescue Exception => err
+    rescue
       @response_status = 102
     ensure
       response_params = {

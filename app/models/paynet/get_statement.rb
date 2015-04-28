@@ -11,7 +11,7 @@ module Paynet
 
     def build_response
       transactions = (@response_status == 0) ? get_statements(date_from, date_to, only_transaction_id?) : ''
-    rescue Exception => err
+    rescue
       @response_status = 102
       transactions = ''
     ensure
