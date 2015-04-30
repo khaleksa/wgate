@@ -57,7 +57,7 @@ module Paynet
 
     def log(tran_id, response_params)
       data = "#{Time.zone.now} - transaction_id:#{tran_id.to_s} response_params:#{response_params.to_s}"
-      ::Logger.new("#{Rails.root}/log/paynet_check_tran_#{Time.zone.now.month}_#{Time.zone.now.year}.log").info(data)
+      ::Logger.new("#{Rails.root}/log/paynet_#{Time.zone.now.month}_#{Time.zone.now.year}.log").info(data)
     end
   end
 

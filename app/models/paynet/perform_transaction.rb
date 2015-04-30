@@ -34,9 +34,9 @@ module Paynet
       return 412 unless authenticated?
       return 201 if PaynetTransaction.exist?(method_arguments['transactionId'])
 
-      #TODO:: User.exist?
-      #unless User.exist?
-      #   return 302
+      #TODO:: check user account
+      account_id = method_arguments['parameters']['paramValue'].to_i
+      return 302 unless account_id == 1001
 
       return 0
     end
@@ -59,7 +59,7 @@ module Paynet
 
     def log(tran_attr, response_params)
       data = "#{Time.zone.now} - transaction_attr:#{tran_attr.to_s} response_params:#{response_params.to_s}"
-      ::Logger.new("#{Rails.root}/log/paynet_perform_tran_#{Time.zone.now.month}_#{Time.zone.now.year}.log").info(data)
+      ::Logger.new("#{Rails.root}/log/paynet_#{Time.zone.now.month}_#{Time.zone.now.year}.log").info(data)
     end
   end
 

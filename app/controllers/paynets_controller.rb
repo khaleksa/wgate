@@ -14,14 +14,15 @@ class PaynetsController < ApplicationController
 
   def action
     action_name = request.headers['SOAPAction'].gsub('urn:', '').gsub('"', '').underscore
+    params = Hash.from_xml(request.body.read)
+    log(action_name, params)
+
     if self.respond_to?(action_name, true)
-      params = Hash.from_xml(request.body.read)
       response = XML_HEADER + send(action_name, params)
       render text: response, content_type: 'text/xml'
     else
       head :not_found
     end
-    log(action_name, params)
   end
 
   private
@@ -46,12 +47,13 @@ class PaynetsController < ApplicationController
     raise 'Not allowed' until ip_list.include? request.remote_ip
   end
 
-  def log(action_name, request)
-    data = "#{Time.zone.now} - action:#{action_name.to_s} request:#{request.to_s}"
-    ::Logger.new("#{Rails.root}/log/paynet_controller_#{Time.zone.now.month}_#{Time.zone.now.year}.log").info(data)
-  end
-
   def ssl_configured?
     !Rails.env.development?
+  end
+
+  def log(action_name, request)
+    logger = ::Logger.new("#{Rails.root}/log/paynet_#{Time.zone.now.month}_#{Time.zone.now.year}.log")
+    logger.info("------------------------- #{action_name.to_s} ----------------------")
+    logger.info("#{Time.zone.now} - action:#{action_name.to_s} request:#{request.to_s}")
   end
 end

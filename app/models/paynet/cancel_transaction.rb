@@ -20,6 +20,8 @@ module Paynet
               @response_status = 202
             end
             state = transaction.state_status
+          else
+            @response_status = 103
           end
         end
       rescue
@@ -41,10 +43,6 @@ module Paynet
       return 411 if !params_valid? || method_arguments['transactionId'].blank?
       return 412 unless authenticated?
       return 103 unless PaynetTransaction.exist?(method_arguments['transactionId'])
-
-      #TODO:: User.exist?
-      #unless User.exist?
-      #   return 302
 
       return 0
     end
@@ -73,7 +71,7 @@ module Paynet
 
     def log(tran_id, response_params)
       data = "#{Time.zone.now} - transaction_id:#{tran_id.to_s} response_params:#{response_params.to_s}"
-      ::Logger.new("#{Rails.root}/log/paynet_cancel_tran_#{Time.zone.now.month}_#{Time.zone.now.year}.log").info(data)
+      ::Logger.new("#{Rails.root}/log/paynet_#{Time.zone.now.month}_#{Time.zone.now.year}.log").info(data)
     end
   end
 

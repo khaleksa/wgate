@@ -35,7 +35,7 @@ describe PaynetsController do
         password: psw_tom,
         username: user_tom,
         amount: 150000,
-        parameters: { paramKey: 'account_id', paramValue: 2222 },
+        parameters: { paramKey: 'account_id', paramValue: 1001 },
         serviceId: 1,
         transactionId: 437,
         transactionTime: '2011-04-26T18:07:22'
@@ -57,7 +57,7 @@ describe PaynetsController do
       expect(transaction.service_id).to eq(1)
       expect(transaction.state_status).to eq(PaynetTransaction::STATUS[:commit])
       expect(transaction.amount).to eq(150000)
-      expect(transaction.account_id).to eq(2222)
+      expect(transaction.account_id).to eq(1001)
       expect(transaction.user_name).to eq(user_tom)
       expect(transaction.password).to eq(psw_tom)
     end

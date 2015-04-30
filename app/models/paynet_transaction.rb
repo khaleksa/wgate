@@ -1,7 +1,7 @@
 class PaynetTransaction < ActiveRecord::Base
   STATUS = {
-    :commit => 0,
-    :error => 1,
+    :error => 0,
+    :commit => 1,
     :cancelled => 2
   }
 
