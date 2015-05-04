@@ -1,4 +1,6 @@
 class ClickTransaction < ActiveRecord::Base
+  belongs_to :provider
+
   include AASM
 
   aasm column: 'status' do
