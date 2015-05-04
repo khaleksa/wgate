@@ -8,7 +8,7 @@ module Paynet
       begin
         if @response_status == 0
           transaction = PaynetTransaction.find_by_paynet_id(paynet_transaction_id)
-          if transaction
+          if transaction && can_cancel?(transaction)
             if (transaction.status == PaynetTransaction::STATUS[:commit])
               transaction.cancel
             else
@@ -42,22 +42,13 @@ module Paynet
       return 0
     end
 
-    #TODO:: can_cancel?
-    def can_cancel?
-      # agn = Agency.find transaction.account_id
-      # time_stamp = transaction.created_at
-      # ten_days = time_stamp + 10.days
-      # third = time_stamp.at_beginning_of_month + 2.days
-      # third+= 1.month if time_stamp.day >= 3
-      # days_ago = (Time.now - time_stamp) / 1.day
-      # if time_stamp <= ten_days && time_stamp + days_ago.days < third
-      #   ActiveRecord::Base.transaction do
-      #     agn.withdrawal!(transaction.amount / 100)
-      #     transaction.cancel!
-      #   end
-      #   state = 2
-      # end
-      # 0
+    def can_cancel?(transaction)
+      edge_time = transaction.created_at.end_of_month - 7.days
+      if (transaction.created_at <= edge_time)
+        return (Time.zone.now <= (transaction.created_at + 10.days))
+      else
+        return (Time.zone.now <= (transaction.created_at.end_of_month + 3.days))
+      end
     end
 
     def paynet_transaction_id

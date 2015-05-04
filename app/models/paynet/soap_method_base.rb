@@ -52,7 +52,6 @@ module Paynet
       params['Envelope'].present? && params['Envelope']['Body'].present? && method_arguments.present?
     end
 
-    #TODO:: authenticated?
     def authenticated?
       user_name = provider.paynet_params['user_name']
       password = provider.paynet_params['password']

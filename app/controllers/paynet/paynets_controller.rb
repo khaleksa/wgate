@@ -9,6 +9,10 @@ class Paynet::PaynetsController < ApplicationController
   def wsdl(provider_id)
     wsdl_path = File.join Rails.public_path, 'ProviderWebService.wsdl'
     wsdl_file = File.read wsdl_path
+
+    provider = Provider.find(provider_id)
+    wsdl_file = wsdl_file.gsub('*client*', provider.name.strip)
+
     render text: wsdl_file.html_safe, content_type: 'text/xml'
   end
 
