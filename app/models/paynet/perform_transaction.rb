@@ -2,11 +2,6 @@ module Paynet
 
   class PerformTransaction < SoapMethodBase
 
-    def initialize(params)
-      @params = params
-      @response_status = validate_status
-    end
-
     def build_response
       transaction_id = 0
       timestamp = Time.zone.now
@@ -15,7 +10,8 @@ module Paynet
         transaction_id = transaction.id
         timestamp = transaction.created_at
       end
-    rescue
+    rescue => exception
+      log("Error: #{exception.message}")
       @response_status = 102
     ensure
       response_params = {
@@ -24,7 +20,7 @@ module Paynet
         timeStamp: timestamp.to_s(:w3cdtf),
         providerTrnId: transaction_id
       }
-      log(transaction_attributes, response_params)
+      log_params(transaction_attributes, response_params)
       return envelope('PerformTransactionResult', pack_params(response_params))
     end
 
@@ -33,33 +29,35 @@ module Paynet
       return 411 if !params_valid? || method_arguments['transactionId'].blank?
       return 412 unless authenticated?
       return 201 if PaynetTransaction.exist?(method_arguments['transactionId'])
-
-      #TODO:: check user account
-      account_id = method_arguments['parameters']['paramValue'].to_i
-      return 302 unless account_id == 1001
+      return 302 unless provider.find_user_by(user_account)
 
       return 0
     end
 
     def transaction_attributes
-     method_params = method_arguments
-     {
-       account_id: method_params['parameters']['paramValue'].to_i,
-       transaction_id: method_params['transactionId'],
-       transaction_timestamp: method_params['transactionTime'],
-       service_id: method_params['serviceId'].to_i,
-       state_status: PaynetTransaction::STATUS[:commit],
-       response_status: @response_status,
-       response_message: STATUS_MESSAGES[@response_status],
-       amount: method_params['amount'].to_i,
-       user_name: method_params['username'],
-       password: method_params['password']
-     }
+      method_params = method_arguments
+      {
+        account_id: user_account,
+        provider_id: provider.id,
+        paynet_id: method_params['transactionId'],
+        paynet_timestamp: method_params['transactionTime'],
+        service_id: method_params['serviceId'].to_i,
+        status: PaynetTransaction::STATUS[:commit],
+        response_status: @response_status,
+        response_message: STATUS_MESSAGES[@response_status],
+        amount: method_params['amount'].to_i,
+        user_name: method_params['username'],
+        password: method_params['password']
+      }
     end
 
-    def log(tran_attr, response_params)
+    def user_account
+      method_arguments['parameters']['paramValue'].strip
+    end
+
+    def log_params(tran_attr, response_params)
       data = "#{Time.zone.now} - transaction_attr:#{tran_attr.to_s} response_params:#{response_params.to_s}"
-      ::Logger.new("#{Rails.root}/log/paynet_#{Time.zone.now.month}_#{Time.zone.now.year}.log").info(data)
+      log(data)
     end
   end
 

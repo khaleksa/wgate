@@ -1,9 +1,9 @@
 FactoryGirl.define do
   factory :paynet_transaction do
-    transaction_id 111
-    transaction_timestamp 2.days.ago
+    paynet_id 111
+    paynet_timestamp 2.days.ago
     service_id 777
-    state_status 1
+    status 1
     amount 1000
     account_id 555
     user_name 'Bob Johns'

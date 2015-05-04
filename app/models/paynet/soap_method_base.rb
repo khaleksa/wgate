@@ -16,7 +16,20 @@ module Paynet
         414 => 'Неверный формат даты и времени.'
     }
 
-    attr_accessor :params
+    attr_accessor :params, :provider
+
+    def initialize(params, provider_id)
+      @params = params
+
+      begin
+        @provider = Provider.find(provider_id)
+      rescue => exception
+        log("Error: #{exception.message}")
+        @response_status = 102
+      end
+
+      @response_status = validate_status unless @response_status
+    end
 
     private
     def pack_params(args = {})
@@ -41,13 +54,19 @@ module Paynet
 
     #TODO:: authenticated?
     def authenticated?
-      method_arguments['username'] == 'TomUz2014' && method_arguments['password'] == 'tom10v000317'
+      user_name = provider.paynet_params['user_name']
+      password = provider.paynet_params['password']
+      method_arguments['username'] == user_name && method_arguments['password'] == password
     end
 
     def to_bool(text)
       return true if text =~ (/^(true)$/i)
       return false if text =~ (/^(false)$/i)
       raise ArgumentError.new("invalid value for Boolean: \"#{text}\"")
+    end
+
+    def log(data)
+      ::Logger.new("#{Rails.root}/log/paynet_#{Time.zone.now.month}_#{Time.zone.now.year}.log").info(data)
     end
   end
 

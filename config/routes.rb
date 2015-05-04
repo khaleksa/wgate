@@ -4,11 +4,17 @@ Rails.application.routes.draw do
 
   # You can have the root of your site routed with "root"
   root 'test#index'
+  get 'test/echo', to: 'test#echo_params'
 
   get 'paynet/wsdl', to: 'paynets#wsdl'
   post 'paynet/action', to: 'paynets#action'
 
   post 'click/sync', to: 'click#sync'
 
-  get 'test/echo', to: 'test#echo_params'
+  namespace :paynet do
+    resource :tom, only: [] do
+      get :wsdl
+      post :action
+    end
+  end
 end

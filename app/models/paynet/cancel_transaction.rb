@@ -2,24 +2,19 @@ module Paynet
 
   class CancelTransaction < SoapMethodBase
 
-    def initialize(params)
-      @params = params
-      @response_status = validate_status
-    end
-
     def build_response
       timestamp = Time.zone.now
       state = 0
       begin
         if @response_status == 0
-          transaction = PaynetTransaction.find_by_transaction_id(paynet_transaction_id)
+          transaction = PaynetTransaction.find_by_paynet_id(paynet_transaction_id)
           if transaction
-            if (transaction.state_status == PaynetTransaction::STATUS[:commit])
+            if (transaction.status == PaynetTransaction::STATUS[:commit])
               transaction.cancel
             else
               @response_status = 202
             end
-            state = transaction.state_status
+            state = transaction.status
           else
             @response_status = 103
           end
@@ -70,7 +65,7 @@ module Paynet
     end
 
     def log(tran_id, response_params)
-      data = "#{Time.zone.now} - transaction_id:#{tran_id.to_s} response_params:#{response_params.to_s}"
+      data = "#{Time.zone.now} - paynet_id:#{tran_id.to_s} response_params:#{response_params.to_s}"
       ::Logger.new("#{Rails.root}/log/paynet_#{Time.zone.now.month}_#{Time.zone.now.year}.log").info(data)
     end
   end

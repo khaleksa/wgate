@@ -2,18 +2,13 @@ module Paynet
 
   class CheckTransaction < SoapMethodBase
 
-    def initialize(params)
-      @params = params
-      @response_status = validate_status
-    end
-
     def build_response
       timestamp = Time.zone.now
-      transaction = PaynetTransaction.find_by_transaction_id(paynet_transaction_id)
+      transaction = PaynetTransaction.find_by_paynet_id(paynet_transaction_id)
       if transaction
         @response_status = 0
         transaction_id = transaction.id
-        transaction_state = transaction.state_status
+        transaction_state = transaction.status
         state_error_status = 'Success'
         state_error_message = ''
       else
@@ -56,7 +51,7 @@ module Paynet
     end
 
     def log(tran_id, response_params)
-      data = "#{Time.zone.now} - transaction_id:#{tran_id.to_s} response_params:#{response_params.to_s}"
+      data = "#{Time.zone.now} - paynet_id:#{tran_id.to_s} response_params:#{response_params.to_s}"
       ::Logger.new("#{Rails.root}/log/paynet_#{Time.zone.now.month}_#{Time.zone.now.year}.log").info(data)
     end
   end

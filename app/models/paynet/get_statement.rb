@@ -4,11 +4,6 @@ module Paynet
 
   class GetStatement < SoapMethodBase
 
-    def initialize(params)
-      @params = params
-      @response_status = validate_status
-    end
-
     def build_response
       transactions = (@response_status == 0) ? get_statements(date_from, date_to, only_transaction_id?) : ''
     rescue
@@ -23,12 +18,12 @@ module Paynet
 
     private
     def get_statements(date_from, date_to, only_transaction_id)
-      transactions = PaynetTransaction.where(created_at: date_from..date_to, state_status: PaynetTransaction::STATUS[:commit]).order(:created_at)
+      transactions = PaynetTransaction.where(created_at: date_from..date_to, status: PaynetTransaction::STATUS[:commit]).order(:created_at)
       transactions.map do |t|
         a = {}
         a[:amount] = t.amount unless only_transaction_id
         a[:providerTrnId] = t.id
-        a[:transactionId] = t.transaction_id unless only_transaction_id
+        a[:transactionId] = t.paynet_id unless only_transaction_id
         a[:transactionTime] = t.created_at.to_s(:w3cdtf) unless only_transaction_id
         '<statements>'+pack_params(a)+'</statements>'
       end.join
