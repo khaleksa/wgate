@@ -150,13 +150,6 @@ class ClickController < ApplicationController
     return error_response(-5) unless user
   end
 
-  def parse_date(date)
-    Time.zone.parse(date.to_s)
-  rescue ArgumentError
-    #TODO: add record to log file
-    Time.zone.now
-  end
-
   def build_transaction!(click_data)
     args = {
         click_id: click_data[:click_trans_id].to_i,

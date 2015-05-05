@@ -11,6 +11,8 @@ Rails.application.routes.draw do
 
   post 'click/sync', to: 'click#sync'
 
+  get '/statistics/transaction', to: 'providers#transactions'
+
   namespace :paynet do
     resource :tom, only: [] do
       get :wsdl

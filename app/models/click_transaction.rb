@@ -16,4 +16,14 @@ class ClickTransaction < ActiveRecord::Base
       transitions :from => [:pending], :to => :commited
     end
   end
+
+  def sync_json_data
+    return if self.pending?
+    {
+        :transaction_id => self.id,
+        :amount => self.amount,
+        :account => self.account_id,
+        :status => (self.commited? ? 'create' : 'cancel')
+    }.to_json
+  end
 end
