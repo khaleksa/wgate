@@ -17,6 +17,7 @@ gem 'turbolinks'
 gem 'jbuilder', '~> 2.0'
 
 gem 'aasm'
+gem 'sidekiq'
 
 group :development, :test do
   gem 'pry'
