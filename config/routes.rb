@@ -6,11 +6,6 @@ Rails.application.routes.draw do
   root 'test#index'
   get 'test/echo', to: 'test#echo_params'
 
-  get 'paynet/wsdl', to: 'paynets#wsdl'
-  post 'paynet/action', to: 'paynets#action'
-
-  post 'click/sync', to: 'click#sync'
-
   get '/statistics/transaction', to: 'providers#transactions'
 
   namespace :paynet do
@@ -18,5 +13,9 @@ Rails.application.routes.draw do
       get :wsdl
       post :action
     end
+  end
+
+  namespace :click do
+    post :tom, to: 'providers#tom'
   end
 end

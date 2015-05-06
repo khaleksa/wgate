@@ -1,8 +1,7 @@
-class ClickController < ApplicationController
+class Click::BasesController < ApplicationController
   skip_before_action :verify_authenticity_token
 
   ACTIONS = { prepare: 0, complete: 1 }
-  SECRET_KEY = 'dfsdfsdfsdfsf' #TODO: move to providers table
   CLICK_STATUS_OK = 0
   CLICK_MIN_AMOUNT = 0
   STATUS_MESSAGES = {
@@ -61,7 +60,7 @@ class ClickController < ApplicationController
     transaction = ClickTransaction.find_by_click_id(click_data[:click_trans_id].to_i)
     return error_response(-6) unless transaction
 
-    return error_response(-8) unless transaction.id == click_data[:merchant_prepare_id]
+    return error_response(-8) unless transaction.id == click_data[:merchant_prepare_id].to_i
     return error_response(-8) unless transaction.amount.to_d == click_data[:amount].to_d
 
     if (click_data[:error].to_i == 0)
@@ -84,6 +83,10 @@ class ClickController < ApplicationController
   end
 
   private
+  def set_secret_key(provider_id)
+    @secret_key = Provider.find(provider_id).click_params['secret_key']
+  end
+
   def click_params
     request.raw_post.split(/&/).inject({}) do |hash, setting|
       key, val = setting.split(/=/)
@@ -109,7 +112,7 @@ class ClickController < ApplicationController
 
     sign = Digest::MD5.hexdigest(click_data[:click_trans_id] +
                                  click_data[:service_id] +
-                                 SECRET_KEY +
+                                 @secret_key +
                                  click_data[:merchant_trans_id] +
                                  click_data[:amount] +
                                  click_data[:action] +
@@ -137,7 +140,7 @@ class ClickController < ApplicationController
 
     sign = Digest::MD5.hexdigest(click_data[:click_trans_id] +
                                  click_data[:service_id] +
-                                 SECRET_KEY +
+                                 @secret_key +
                                  click_data[:merchant_trans_id] +
                                  click_data[:merchant_prepare_id] +
                                  click_data[:amount] +

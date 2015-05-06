@@ -1,7 +1,10 @@
 # encoding: UTF-8
 require 'rails_helper'
 
-describe ClickController do
+describe Click::ProvidersController do
+  let(:secret_key) { 'tom_secret_key' }
+  let!(:provider) { FactoryGirl.create(:provider, name: 'tom', password: '123', click_params: {secret_key: secret_key}) }
+
   let(:click_trans_id) { 123 }
   let(:account_id) { '123456asd' }
   let(:service_id) { 1 }
@@ -9,7 +12,7 @@ describe ClickController do
   let(:timestamp) { '2015-04-28 12:13:25' }
 
   let(:sync_params) { hash_to_param_string(params) }
-  let(:sync_request) { post :sync, sync_params, 'CONTENT_TYPE' => 'application/text' }
+  let(:sync_request) { post :tom, sync_params, 'CONTENT_TYPE' => 'application/text' }
   let(:response_data) { JSON.parse(response.body) }
 
   def hash_to_param_string(hash)
@@ -22,7 +25,7 @@ describe ClickController do
   describe 'Prepare action' do
     context 'with valid response' do
       let(:action) { 0 }
-      let(:sign_string) { Digest::MD5.hexdigest(click_trans_id.to_s + service_id.to_s + ClickController::SECRET_KEY + account_id + amount.to_s + action.to_s + timestamp) }
+      let(:sign_string) { Digest::MD5.hexdigest(click_trans_id.to_s + service_id.to_s + secret_key + account_id + amount.to_s + action.to_s + timestamp) }
 
       let(:params) {{
           click_trans_id: click_trans_id,
@@ -69,7 +72,7 @@ describe ClickController do
                                                                  amount: amount,
                                                                  action: 0,
                                                                  click_error: 0) }
-      let(:sign_string) { Digest::MD5.hexdigest(click_trans_id.to_s + service_id.to_s + ClickController::SECRET_KEY + account_id + transaction.id.to_s + amount.to_s + action.to_s + timestamp) }
+      let(:sign_string) { Digest::MD5.hexdigest(click_trans_id.to_s + service_id.to_s + secret_key + account_id + transaction.id.to_s + amount.to_s + action.to_s + timestamp) }
       let(:params) {{
           click_trans_id: click_trans_id,
           service_id: service_id,

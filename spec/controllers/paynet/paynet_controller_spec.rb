@@ -12,7 +12,7 @@ describe Paynet::PaynetsController do
 
   let(:user_tom) { 'Tom' }
   let(:psw_tom) { 'tom_uz' }
-  let!(:provider) { FactoryGirl.create(:provider, name: 'tom', paynet_params: {user_name: user_tom, password: psw_tom}) }
+  let!(:provider) { FactoryGirl.create(:provider, name: 'tom', password: 'tom_psw', paynet_params: {user_name: user_tom, password: psw_tom}) }
   let!(:user_account) { '1001' }
   let!(:user) { FactoryGirl.create(:user, provider_id: provider.id, account: user_account) }
 

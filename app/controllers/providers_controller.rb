@@ -11,7 +11,6 @@ class ProvidersController < ApplicationController
     return render_status 415 unless start_date && end_date
 
     transactions = Statistics.transaction_for(provider.id, start_date, end_date)
-    binding.pry
     render json: trancate_transaction_data(transactions)
   end
 
@@ -21,7 +20,7 @@ class ProvidersController < ApplicationController
       {
           :transaction_id => t['transaction_id'],
           :account => t['account'],
-          # :status => (t.status == 1 ? 'create' : 'cancel'),
+          :status => t['transaction_status'], #todo:: check status of transaction
           :amount => t['amount'],
           :timestamp => t['timestamp']
       }
