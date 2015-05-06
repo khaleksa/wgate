@@ -5,8 +5,6 @@ class ApplicationController < ActionController::Base
 
   def parse_date(date)
     Time.zone.parse(date.to_s)
-  rescue ArgumentError
-    Time.zone.now
   end
 
   private
