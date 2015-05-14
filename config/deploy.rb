@@ -11,8 +11,8 @@ set :repo_url, 'git@bitbucket.org:khaleksa/paysys.git'
 
 
 set :rvm_type, :system
-set :rvm_user, 'Alexandra'
-set :rvm_ruby_version, '2.1.1'
+set :rvm_user, 'bob'
+set :rvm_ruby_version, '2.2.1'
 set :deploy_to, '/var/www/paysys'
 
 namespace :deploy do
