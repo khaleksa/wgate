@@ -42,10 +42,9 @@ namespace :deploy do
       sudo "chmod +x /etc/init.d/unicorn.paysys"
 
       upload!('shared/paysys.conf', "#{shared_path}/paysys.conf")
-      sudo 'sudo /etc/init.d/nginx stop'
-      # sudo "sudo rm -f /etc/nginx/nginx.conf"
+      sudo '/etc/init.d/nginx stop'
       sudo "ln -s #{shared_path}/paysys.conf /etc/nginx/sites-enabled/paysys.conf"
-      sudo 'sudo /etc/init.d/nginx start'
+      sudo '/etc/init.d/nginx start'
 
       within release_path do
         with rails_env: fetch(:rails_env) do

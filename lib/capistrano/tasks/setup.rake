@@ -19,19 +19,33 @@ namespace :setup do
     end
   end
 
+  desc "Upload nginx config."
+  task :upload_nginx_conf do
+    on roles(:app) do
+      upload!('shared/paysys.conf', "#{shared_path}/paysys.conf")
+    end
+  end
+
+  desc "Upload unicorn config."
+  task :upload_unicorn_conf do
+    on roles(:app) do
+      upload!('shared/unicorn.paysys', "#{shared_path}/unicorn.paysys")
+    end
+  end
+
   desc "Symlinks config files for Nginx and Unicorn."
   task :symlink_config do
     on roles(:app) do
       upload!('shared/unicorn.paysys', "#{shared_path}/unicorn.paysys")
-      sudo "sudo rm -f /etc/init.d/unicorn.paysys"
+      sudo "rm -f /etc/init.d/unicorn.paysys"
       sudo "ln -s #{shared_path}/unicorn.paysys /etc/init.d/unicorn.paysys"
       sudo "chmod +x /etc/init.d/unicorn.paysys"
 
       upload!('shared/paysys.conf', "#{shared_path}/paysys.conf")
-      sudo 'sudo /etc/init.d/nginx stop'
-      sudo "sudo rm -f /etc/nginx/sites-enabled/paysys.conf"
+      sudo '/etc/init.d/nginx stop'
+      sudo "rm -f /etc/nginx/sites-enabled/paysys.conf"
       sudo "ln -s #{shared_path}/paysys.conf /etc/nginx/sites-enabled/paysys.conf"
-      sudo 'sudo /etc/init.d/nginx start'
+      sudo '/etc/init.d/nginx start'
     end
   end
 
