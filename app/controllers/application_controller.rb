@@ -11,4 +11,8 @@ class ApplicationController < ActionController::Base
   def render_status(status)
     render :nothing => true, :status => status
   end
+
+  def ssl_configured?
+    !Rails.env.development?
+  end
 end

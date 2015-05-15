@@ -51,10 +51,6 @@ class Paynet::PaynetsController < ApplicationController
     raise 'Not allowed' until ip_list.include? request.remote_ip
   end
 
-  def ssl_configured?
-    !Rails.env.development?
-  end
-
   def log(action_name, provider_id, request)
     logger = ::Logger.new("#{Rails.root}/log/paynet_#{Time.zone.now.month}_#{Time.zone.now.year}.log")
     logger.info("------------------------- #{action_name.to_s} ----------------------")
