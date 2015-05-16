@@ -18,6 +18,8 @@ gem 'jbuilder', '~> 2.0'
 
 gem 'aasm'
 gem 'sidekiq'
+gem 'httparty'
+gem 'activerecord-import'
 
 group :development, :test do
   gem 'pry'
@@ -31,6 +33,8 @@ group :development, :test do
   gem 'factory_girl'
   gem 'factory_girl_rails'
   gem 'factory_girl_rspec'
+
+  gem 'webmock'
 end
 
 group :test do
