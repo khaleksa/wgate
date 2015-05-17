@@ -4,8 +4,10 @@ require 'rails_helper'
 describe Click::ProvidersController do
   let(:secret_key) { 'tom_secret_key' }
   let!(:provider) { FactoryGirl.create(:provider, name: 'tom', password: '123', click_params: {secret_key: secret_key}) }
+  let!(:user) { FactoryGirl.create(:user, provider_id: provider.id, account: account_id) }
 
   let(:click_trans_id) { 123 }
+  let(:click_paydoc_id) { 456 }
   let(:account_id) { '123456asd' }
   let(:service_id) { 1 }
   let(:amount) { 1200.50 }
@@ -29,6 +31,7 @@ describe Click::ProvidersController do
 
       let(:params) {{
           click_trans_id: click_trans_id,
+          click_paydoc_id: click_paydoc_id,
           service_id: service_id,
           merchant_trans_id: account_id,
           amount: amount,
@@ -43,13 +46,14 @@ describe Click::ProvidersController do
         sync_request
         expect(response.header['Content-Type']).to include 'application/json'
         expect(response_data).to be_a(Hash)
+        expect(response_data.include?('click_trans_id')).to be_truthy
         expect(response_data.include?('merchant_trans_id')).to be_truthy
         expect(response_data.include?('merchant_prepare_id')).to be_truthy
         expect(response_data['error']).to eq(0)
         expect(response_data.include?('error_note')).to be_truthy
       end
 
-      it 'creates penging ClickTransaction' do
+      it 'creates pending ClickTransaction' do
         expect{sync_request}.to change{ ClickTransaction.all.size }.from(0).to(1)
         transaction = ClickTransaction.first
         expect(transaction.status).to eq('pending')
@@ -75,6 +79,7 @@ describe Click::ProvidersController do
       let(:sign_string) { Digest::MD5.hexdigest(click_trans_id.to_s + service_id.to_s + secret_key + account_id + transaction.id.to_s + amount.to_s + action.to_s + timestamp) }
       let(:params) {{
           click_trans_id: click_trans_id,
+          click_paydoc_id: click_paydoc_id,
           service_id: service_id,
           merchant_trans_id: account_id,
           merchant_prepare_id: transaction.id,
@@ -90,6 +95,7 @@ describe Click::ProvidersController do
         sync_request
         expect(response.header['Content-Type']).to include 'application/json'
         expect(response_data).to be_a(Hash)
+        expect(response_data.include?('click_trans_id')).to be_truthy
         expect(response_data.include?('merchant_trans_id')).to be_truthy
         expect(response_data.include?('merchant_confirm_id')).to be_truthy
         expect(response_data['error']).to eq(0)
