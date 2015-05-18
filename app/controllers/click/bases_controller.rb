@@ -22,7 +22,9 @@ class Click::BasesController < ApplicationController
 
   def sync
     click_data = click_params
-    render json: process_click_action(click_data)
+    response = process_click_action(click_data)
+    log(click_data, response)
+    render json: response
   end
 
   def set_secret_key(provider_id)
@@ -160,5 +162,12 @@ class Click::BasesController < ApplicationController
         error: error_code,
         error_note: STATUS_MESSAGES[error_code],
     }.to_json
+  end
+
+  def log(params, response)
+    logger = ::Logger.new("#{Rails.root}/log/click_#{Time.zone.now.month}_#{Time.zone.now.year}.log")
+    logger.info("------------------ click_trans_id=#{params[:click_trans_id]} ------------------")
+    logger.info("click_params:#{params.to_s}")
+    logger.info("pays_response:#{response.to_s}")
   end
 end
