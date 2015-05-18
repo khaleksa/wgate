@@ -22,7 +22,9 @@ class Click::BasesController < ApplicationController
 
   def sync
     click_data = click_params
-    render json: process_click_action(click_data)
+    response = process_click_action(click_data)
+    log(click_data, response)
+    render json: response
   end
 
   def set_secret_key(provider_id)
@@ -57,7 +59,7 @@ class Click::BasesController < ApplicationController
   end
 
   def verify_prepare_data(click_data)
-    prepare_request_params = [:click_trans_id, :service_id, :click_paydoc_id, :merchant_trans_id, :amount, :action, :error, :error_note, :sign_time, :sign_string]
+    prepare_request_params = [:click_trans_id, :service_id, :merchant_trans_id, :amount, :action, :error, :error_note, :sign_time, :sign_string]
     missing_param = prepare_request_params.detect { |k| !click_data.has_key?(k) }
     return error_response(-8) if missing_param.present?
 
@@ -114,7 +116,7 @@ class Click::BasesController < ApplicationController
   end
 
   def verify_complete_data(click_data)
-    complete_request_params = [:click_trans_id, :service_id, :click_paydoc_id, :merchant_trans_id, :merchant_prepare_id,
+    complete_request_params = [:click_trans_id, :service_id, :merchant_trans_id, :merchant_prepare_id,
                                :amount, :action, :error, :error_note, :sign_time, :sign_string]
     missing_param = complete_request_params.detect { |k| !click_data.has_key?(k) }
     return error_response(-8) if missing_param.present?
@@ -150,7 +152,7 @@ class Click::BasesController < ApplicationController
   def click_params
     request.raw_post.split(/&/).inject({}) do |hash, setting|
       key, val = setting.split(/=/)
-      hash[key.to_sym] = val
+      hash[key.to_sym] = val.present? ? CGI.unescape(val) : ''
       hash
     end
   end
@@ -160,5 +162,12 @@ class Click::BasesController < ApplicationController
         error: error_code,
         error_note: STATUS_MESSAGES[error_code],
     }.to_json
+  end
+
+  def log(params, response)
+    logger = ::Logger.new("#{Rails.root}/log/click_#{Time.zone.now.month}_#{Time.zone.now.year}.log")
+    logger.info("------------------ click_trans_id=#{params[:click_trans_id]} ------------------")
+    logger.info("click_params:#{params.to_s}")
+    logger.info("pays_response:#{response.to_s}")
   end
 end
