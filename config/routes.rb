@@ -17,5 +17,6 @@ Rails.application.routes.draw do
 
   namespace :click do
     post :tom, to: 'providers#tom'
+    post :erkatoy, to: 'providers#erkatoy'
   end
 end
