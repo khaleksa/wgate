@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 module Paynet
-  DATE_FORMAT = '%Y-%m-%d %H:%M:%S %z'
+  DATE_FORMAT = '%Y-%m-%dT%H:%M:%S%:z'
 
   class SoapMethodBase
     STATUS_MESSAGES = {
