@@ -10,7 +10,7 @@ module Paynet
       @response_status = 102
       transactions = ''
     ensure
-      args = pack_params(errorMsg: STATUS_MESSAGES[@response_status], status: @response_status, timeStamp: DateTime.now.to_s(:w3cdtf))
+      args = pack_params(errorMsg: STATUS_MESSAGES[@response_status], status: @response_status, timeStamp: DateTime.now.strftime(DATE_FORMAT))
       response_params = args + transactions
       log(response_params)
       return envelope('GetStatementResult', response_params)
@@ -24,7 +24,7 @@ module Paynet
         a[:amount] = t.amount unless only_transaction_id
         a[:providerTrnId] = t.id
         a[:transactionId] = t.paynet_id unless only_transaction_id
-        a[:transactionTime] = t.created_at.to_s(:w3cdtf) unless only_transaction_id
+        a[:transactionTime] = t.created_at.strftime(DATE_FORMAT) unless only_transaction_id
         '<statements>'+pack_params(a)+'</statements>'
       end.join
     end

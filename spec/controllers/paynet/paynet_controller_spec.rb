@@ -12,7 +12,7 @@ describe Paynet::PaynetsController do
 
   let(:user_tom) { 'Tom' }
   let(:psw_tom) { 'tom_uz' }
-  let!(:provider) { FactoryGirl.create(:provider, name: 'tom', password: 'tom_psw', paynet_params: {user_name: user_tom, password: psw_tom}) }
+  let!(:provider) { FactoryGirl.create(:provider, id: 2, name: 'tom', password: 'tom_psw', paynet_params: {user_name: user_tom, password: psw_tom}) }
   let!(:user_account) { '1001' }
   let!(:user) { FactoryGirl.create(:user, provider_id: provider.id, account: user_account) }
 
@@ -145,8 +145,8 @@ describe Paynet::PaynetsController do
       {
           password: psw_tom,
           username: user_tom,
-          dateFrom: 5.days.ago.to_s(:w3cdtf),
-          dateTo: 2.days.ago.to_s(:w3cdtf),
+          dateFrom: 5.days.ago.strftime(Paynet::DATE_FORMAT),
+          dateTo: 2.days.ago.strftime(Paynet::DATE_FORMAT),
           serviceId: 1,
           onlyTransactionId: false,
           parameters: { paramKey: 'reason', paramValue: '' }
@@ -168,7 +168,7 @@ describe Paynet::PaynetsController do
                                     :amount           => transaction_1.amount.to_s,
                                     :provider_trn_id  => transaction_1.id.to_s,
                                     :transaction_id   => transaction_1.paynet_id,
-                                    :transaction_time => transaction_1.created_at.to_s(:w3cdtf)
+                                    :transaction_time => transaction_1.created_at.strftime(Paynet::DATE_FORMAT)
                                    )
     end
   end

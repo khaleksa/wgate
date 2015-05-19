@@ -47,6 +47,7 @@ class Paynet::PaynetsController < ApplicationController
   end
 
   def check_ip
+    return if Rails.env.development?
     ip_list = PAYNET_CONFIG[:ip_list]
     raise 'Not allowed' until ip_list.include? request.remote_ip
   end

@@ -25,7 +25,7 @@ module Paynet
         response_params = {
           errorMsg: STATUS_MESSAGES[@response_status],
           status: @response_status,
-          timeStamp: timestamp.to_s(:w3cdtf),
+          timeStamp: timestamp.strftime(DATE_FORMAT),
           transactionState: state
         }
         log(paynet_transaction_id, response_params)
