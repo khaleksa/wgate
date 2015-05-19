@@ -1,6 +1,6 @@
 class Paynet::TomsController < Paynet::PaynetsController
 
-  PROVIDER_ID = 1
+  PROVIDER_ID = 2
 
   def wsdl
     super(PROVIDER_ID)
