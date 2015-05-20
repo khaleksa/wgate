@@ -42,7 +42,6 @@ module Paynet
         paynet_id: method_params['transactionId'],
         paynet_timestamp: method_params['transactionTime'],
         service_id: method_params['serviceId'].to_i,
-        status: PaynetTransaction::STATUS[:commit],
         response_status: @response_status,
         response_message: STATUS_MESSAGES[@response_status],
         amount: method_params['amount'].to_i,

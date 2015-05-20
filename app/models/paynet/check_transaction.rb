@@ -8,13 +8,13 @@ module Paynet
       if transaction
         @response_status = 0
         transaction_id = transaction.id
-        transaction_state = transaction.status
+        transaction_state = PaynetTransaction.statuses[transaction.status]
         state_error_status = 'Success'
         state_error_message = ''
       else
         @response_status = 103
         transaction_id = 0
-        transaction_state = PaynetTransaction::STATUS[:error]
+        transaction_state = PaynetTransaction::STATUS_ERROR
         state_error_status = 'Error'
         state_error_message = "Transaction with id=#{paynet_transaction_id} wasn't found."
       end
@@ -22,7 +22,7 @@ module Paynet
       log("CheckTransaction#build_response Error: #{exception.message}")
       @response_status = 102
       transaction_id = 0
-      transaction_state = PaynetTransaction::STATUS[:error]
+      transaction_state = PaynetTransaction::STATUS_ERROR
       state_error_status = 'Error'
       state_error_message = 'Internal error'
     ensure

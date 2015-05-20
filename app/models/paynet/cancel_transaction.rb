@@ -9,12 +9,8 @@ module Paynet
         if @response_status == 0
           transaction = PaynetTransaction.find_by_paynet_id(paynet_transaction_id)
           if transaction && can_cancel?(transaction)
-            if (transaction.status == PaynetTransaction::STATUS[:commit])
-              transaction.cancel
-            else
-              @response_status = 202
-            end
-            state = transaction.status
+            transaction.commited? ? transaction.cancel! : @response_status = 202
+            state = PaynetTransaction.statuses[transaction.status]
           else
             @response_status = 103
           end

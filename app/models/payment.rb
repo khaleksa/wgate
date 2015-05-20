@@ -11,7 +11,7 @@ class Payment < ActiveRecord::Base
     state :cancelled
 
     event :cancel do
-      transitions :from => [:pending], :to => :cancelled
+      transitions :from => [:pending, :commited], :to => :cancelled
     end
 
     event :commit do

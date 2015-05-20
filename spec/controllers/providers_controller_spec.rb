@@ -10,10 +10,9 @@ describe ProvidersController do
     let(:psw_tom) { 'tom_uz' }
     let!(:provider) { FactoryGirl.create(:provider, name: user_tom, password: psw_tom) }
 
-    let(:transaction_status) { PaynetTransaction::STATUS[:commit] }
-    let!(:transaction_1) { create_paynet_transaction_at(4.days.ago, paynet_id: 111, account_id: '111111', provider_id: provider.id, status: transaction_status, amount: 1000) }
-    let!(:transaction_2) { create_paynet_transaction_at(3.days.ago, paynet_id: 222, account_id: '222222', provider_id: provider.id, status: transaction_status, amount: 2000) }
-    let!(:transaction_3) { create_paynet_transaction_at(1.days.ago, paynet_id: 333, account_id: '222222', provider_id: provider.id, status: transaction_status, amount: 3000) }
+    let!(:transaction_1) { create_paynet_transaction_at(4.days.ago, paynet_id: 111, account_id: '111111', provider_id: provider.id, amount: 1000) }
+    let!(:transaction_2) { create_paynet_transaction_at(3.days.ago, paynet_id: 222, account_id: '222222', provider_id: provider.id, amount: 2000) }
+    let!(:transaction_3) { create_paynet_transaction_at(1.days.ago, paynet_id: 333, account_id: '222222', provider_id: provider.id, amount: 3000) }
 
     let(:response_data) { JSON.parse(response.body) }
 

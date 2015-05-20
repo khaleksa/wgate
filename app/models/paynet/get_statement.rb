@@ -19,7 +19,7 @@ module Paynet
 
     private
     def get_statements(date_from, date_to, only_transaction_id)
-      transactions = PaynetTransaction.where(created_at: date_from..date_to, status: PaynetTransaction::STATUS[:commit]).order(:created_at)
+      transactions = PaynetTransaction.where(created_at: date_from..date_to, status: PaynetTransaction.statuses[:commited]).order(:created_at)
       transactions.map do |t|
         a = {}
         a[:amount] = t.amount unless only_transaction_id

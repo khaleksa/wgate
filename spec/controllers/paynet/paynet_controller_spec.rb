@@ -50,7 +50,7 @@ describe Paynet::PaynetsController do
       it 'create PaymentTransaction' do
         expect{ response }.to change{ PaynetTransaction.all.size }.from(0).to(1)
         expect(transaction.service_id).to eq(1)
-        expect(transaction.status).to eq(PaynetTransaction::STATUS[:commit])
+        expect(transaction.commited?).to be_truthy
         expect(transaction.amount).to eq(150000)
         expect(transaction.account_id).to eq(user_account)
         expect(transaction.user_name).to eq(user_tom)
@@ -80,7 +80,7 @@ describe Paynet::PaynetsController do
 
   describe 'soap method: CancelTransaction' do
     let(:transaction_id) { '123456' }
-    let!(:transaction) { FactoryGirl.create(:paynet_transaction, paynet_id: transaction_id, account_id: user_account, status: PaynetTransaction::STATUS[:commit], provider_id: provider.id) }
+    let!(:transaction) { FactoryGirl.create(:paynet_transaction, paynet_id: transaction_id, account_id: user_account, provider_id: provider.id) }
     let(:params) do
       {
         password: psw_tom,
@@ -102,7 +102,7 @@ describe Paynet::PaynetsController do
 
     it 'cancel Payment Transaction state status' do
       transaction.reload
-      expect(transaction.status).to eq(PaynetTransaction::STATUS[:cancelled])
+      expect(transaction.cancelled?).to be_truthy
     end
   end
 
@@ -110,7 +110,7 @@ describe Paynet::PaynetsController do
     let(:transaction_id) { '123456' }
     let(:status_ok) { 0 }
     let(:status_ok_msg) { 'Успешно.' }
-    let!(:transaction) { FactoryGirl.create(:paynet_transaction, paynet_id: transaction_id, provider_id: provider.id, status: PaynetTransaction::STATUS[:commit], response_status: status_ok, response_message: status_ok_msg) }
+    let!(:transaction) { FactoryGirl.create(:paynet_transaction, paynet_id: transaction_id, provider_id: provider.id, response_status: status_ok, response_message: status_ok_msg) }
     let(:params) do
       {
         password: psw_tom,
@@ -129,17 +129,16 @@ describe Paynet::PaynetsController do
       expect(response_data[:status].to_i).to eq status_ok
       expect(response_data.include?(:time_stamp)).to be_truthy
       expect(response_data[:provider_trn_id].to_i).to eq(transaction.id)
-      expect(response_data[:transaction_state].to_i).to eq(transaction.status)
+      expect(response_data[:transaction_state].to_i).to eq(PaynetTransaction.statuses[transaction.status])
       expect(response_data[:transaction_state_error_status]).to eq('Success')
       expect(response_data.include?(:transaction_state_error_msg)).to be_truthy
     end
   end
 
   describe 'soap method: GetStatement' do
-    let(:transaction_status) { PaynetTransaction::STATUS[:commit] }
-    let!(:transaction_1) { create_paynet_transaction_at(4.days.ago, paynet_id: 111, account_id: user_account, provider_id: provider.id, status: transaction_status, amount: 1000) }
-    let!(:transaction_2) { create_paynet_transaction_at(3.days.ago, paynet_id: 222, account_id: user_account, provider_id: provider.id, status: transaction_status, amount: 2000) }
-    let!(:transaction_3) { create_paynet_transaction_at(1.days.ago, paynet_id: 333, account_id: user_account, provider_id: provider.id, status: transaction_status, amount: 3000) }
+    let!(:transaction_1) { create_paynet_transaction_at(4.days.ago, paynet_id: 111, account_id: user_account, provider_id: provider.id, amount: 1000) }
+    let!(:transaction_2) { create_paynet_transaction_at(3.days.ago, paynet_id: 222, account_id: user_account, provider_id: provider.id, amount: 2000) }
+    let!(:transaction_3) { create_paynet_transaction_at(1.days.ago, paynet_id: 333, account_id: user_account, provider_id: provider.id, amount: 3000) }
 
     let(:params) do
       {
