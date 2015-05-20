@@ -11,7 +11,8 @@ describe Click::ProvidersController do
   let(:account_id) { '123456asd' }
   let(:service_id) { 1 }
   let(:amount) { 1200.50 }
-  let(:timestamp) { '2015-04-28 12:13:25' }
+  let(:timestamp_sign) { '2015-05-18 16:52:02' }
+  let(:timestamp) { "2015-05-18+16%3A52%3A02" }
 
   let(:sync_params) { hash_to_param_string(params) }
   let(:sync_request) { post :tom, sync_params, 'CONTENT_TYPE' => 'application/text' }
@@ -27,7 +28,7 @@ describe Click::ProvidersController do
   describe 'Prepare action' do
     context 'with valid response' do
       let(:action) { 0 }
-      let(:sign_string) { Digest::MD5.hexdigest(click_trans_id.to_s + service_id.to_s + secret_key + account_id + amount.to_s + action.to_s + timestamp) }
+      let(:sign_string) { Digest::MD5.hexdigest(click_trans_id.to_s + service_id.to_s + secret_key + account_id + amount.to_s + action.to_s + timestamp_sign) }
 
       let(:params) {{
           click_trans_id: click_trans_id,
@@ -76,7 +77,7 @@ describe Click::ProvidersController do
                                                                  amount: amount,
                                                                  action: 0,
                                                                  click_error: 0) }
-      let(:sign_string) { Digest::MD5.hexdigest(click_trans_id.to_s + service_id.to_s + secret_key + account_id + transaction.id.to_s + amount.to_s + action.to_s + timestamp) }
+      let(:sign_string) { Digest::MD5.hexdigest(click_trans_id.to_s + service_id.to_s + secret_key + account_id + transaction.id.to_s + amount.to_s + action.to_s + timestamp_sign) }
       let(:params) {{
           click_trans_id: click_trans_id,
           click_paydoc_id: click_paydoc_id,

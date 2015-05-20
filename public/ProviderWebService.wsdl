@@ -297,7 +297,7 @@
 	</wsdl:binding>
 	<wsdl:service name="ProviderWebService">
 		<wsdl:port name="ProviderWebServicePort" binding="tns:ProviderWebServiceBinding">
-			<soap:address location="https://application/paynet/*client*/action"/>
+			<soap:address location="https://83.221.163.177/paynet/*client*/action"/>
 		</wsdl:port>
 	</wsdl:service>
 </wsdl:definitions>
