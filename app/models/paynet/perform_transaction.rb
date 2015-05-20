@@ -11,7 +11,7 @@ module Paynet
         timestamp = transaction.created_at
       end
     rescue => exception
-      log("Error: #{exception.message}")
+      log("PerformTransaction#build_response Error: #{exception.message}")
       @response_status = 102
     ensure
       response_params = {

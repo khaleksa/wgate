@@ -10,7 +10,7 @@ class PaynetTransaction < ActiveRecord::Base
     :cancelled => 2
   }
 
-  after_create :notify_provider
+  # after_create :notify_provider
 
   def cancel
     self.status = STATUS[:cancelled]

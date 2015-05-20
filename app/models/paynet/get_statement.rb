@@ -6,13 +6,14 @@ module Paynet
 
     def build_response
       transactions = (@response_status == 0) ? get_statements(date_from, date_to, only_transaction_id?) : ''
-    rescue
+    rescue => exception
+      log("GetStatement#build_response Error: #{exception.message}")
       @response_status = 102
       transactions = ''
     ensure
       args = pack_params(errorMsg: STATUS_MESSAGES[@response_status], status: @response_status, timeStamp: DateTime.now.strftime(DATE_FORMAT))
       response_params = args + transactions
-      log(response_params)
+      log_params(response_params)
       return envelope('GetStatementResult', response_params)
     end
 
@@ -49,9 +50,9 @@ module Paynet
       to_bool(method_arguments['onlyTransactionId'])
     end
 
-    def log(response_params)
+    def log_params(response_params)
       data = "#{Time.zone.now} - date_from:#{date_from.to_s} date_to:#{date_to.to_s} only_tran_id:#{only_transaction_id?.to_s} response_params:#{response_params.to_s}"
-      ::Logger.new("#{Rails.root}/log/paynet_#{Time.zone.now.month}_#{Time.zone.now.year}.log").info(data)
+      log(data)
     end
   end
 

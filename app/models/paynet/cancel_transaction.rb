@@ -19,7 +19,8 @@ module Paynet
             @response_status = 103
           end
         end
-      rescue
+      rescue => exception
+        log("CancelTransaction#build_response Error: #{exception.message}")
         @response_status = 102
       ensure
         response_params = {
@@ -28,7 +29,7 @@ module Paynet
           timeStamp: timestamp.strftime(DATE_FORMAT),
           transactionState: state
         }
-        log(paynet_transaction_id, response_params)
+        log_params(paynet_transaction_id, response_params)
         return envelope('CancelTransactionResult', pack_params(response_params))
       end
     end
@@ -55,9 +56,9 @@ module Paynet
       method_arguments['transactionId']
     end
 
-    def log(tran_id, response_params)
+    def log_params(tran_id, response_params)
       data = "#{Time.zone.now} - paynet_id:#{tran_id.to_s} response_params:#{response_params.to_s}"
-      ::Logger.new("#{Rails.root}/log/paynet_#{Time.zone.now.month}_#{Time.zone.now.year}.log").info(data)
+      log(data)
     end
   end
 

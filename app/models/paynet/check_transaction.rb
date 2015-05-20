@@ -18,7 +18,8 @@ module Paynet
         state_error_status = 'Error'
         state_error_message = "Transaction with id=#{paynet_transaction_id} wasn't found."
       end
-    rescue
+    rescue => exception
+      log("CheckTransaction#build_response Error: #{exception.message}")
       @response_status = 102
       transaction_id = 0
       transaction_state = PaynetTransaction::STATUS[:error]
@@ -34,7 +35,7 @@ module Paynet
         transactionStateErrorStatus: state_error_status,
         transactionStateErrorMsg: state_error_message
       }
-      log(paynet_transaction_id, response_params)
+      log_params(paynet_transaction_id, response_params)
       return envelope('CheckTransactionResult', pack_params(response_params))
     end
 
@@ -50,9 +51,9 @@ module Paynet
       method_arguments['transactionId']
     end
 
-    def log(tran_id, response_params)
+    def log_params(tran_id, response_params)
       data = "#{Time.zone.now} - paynet_id:#{tran_id.to_s} response_params:#{response_params.to_s}"
-      ::Logger.new("#{Rails.root}/log/paynet_#{Time.zone.now.month}_#{Time.zone.now.year}.log").info(data)
+      log(data)
     end
   end
 
