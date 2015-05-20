@@ -46,3 +46,10 @@ RSpec.configure do |config|
 
   config.include CreateInPastHelper
 end
+
+# SSL doesn't redirect in test suite
+module ActionController::ForceSSL::ClassMethods
+  def force_ssl(options = {})
+    # noop
+  end
+end
