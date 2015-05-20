@@ -3,7 +3,7 @@ require 'rails_helper'
 
 describe Click::ProvidersController do
   let(:secret_key) { 'tom_secret_key' }
-  let!(:provider) { FactoryGirl.create(:provider, name: 'tom', password: '123', click_params: {secret_key: secret_key}) }
+  let!(:provider) { FactoryGirl.create(:provider, id: 2, name: 'tom', password: '123', click_params: {secret_key: secret_key}) }
   let!(:user) { FactoryGirl.create(:user, provider_id: provider.id, account: account_id) }
 
   let(:click_trans_id) { 123 }

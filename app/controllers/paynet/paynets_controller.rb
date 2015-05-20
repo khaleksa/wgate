@@ -11,6 +11,7 @@ class Paynet::PaynetsController < ApplicationController
     wsdl_file = File.read wsdl_path
 
     provider = Provider.find(provider_id)
+    wsdl_file = wsdl_file.gsub('83.221.163.177', 'application') if Rails.env.test?
     wsdl_file = wsdl_file.gsub('*client*', provider.name.strip)
 
     render text: wsdl_file.html_safe, content_type: 'text/xml'
