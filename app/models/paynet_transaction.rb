@@ -1,5 +1,6 @@
 class PaynetTransaction < ActiveRecord::Base
   belongs_to :provider
+  has_one :payment, as: :paymentable
 
   validates_presence_of :paynet_id, :amount, :account_id, :provider_id
 
