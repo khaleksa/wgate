@@ -1,6 +1,6 @@
-class ProvidersController < ApplicationController
+class PaymentsController < ApplicationController
 
-  def transactions
+  def report
     return render_status 400 if missed_transactions_params?
 
     provider = Provider.where('name = ? AND password = ?', params[:name], params[:password]).first
@@ -11,7 +11,7 @@ class ProvidersController < ApplicationController
     return render_status 415 unless start_date && end_date
 
     transactions = Statistics.transaction_for(provider.id, start_date, end_date)
-    render json: trancate_transaction_data(transactions)
+    render json: transactions
   end
 
   private

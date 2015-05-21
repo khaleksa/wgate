@@ -60,6 +60,7 @@ class PaynetTransaction < ActiveRecord::Base
       p.amount = self.amount
       p.status = self.status
       p.payment_system = 'paynet'
+      p.provider_id = self.provider_id
     end.save!
   end
 end

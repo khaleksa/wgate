@@ -6,7 +6,9 @@ Rails.application.routes.draw do
   root 'test#index'
   get 'test/echo', to: 'test#echo_params'
 
-  get '/statistics/transactions', to: 'providers#transactions'
+  resource :payment, only: [] do
+    get :report
+  end
 
   namespace :paynet do
     resource :tom, only: [] do
