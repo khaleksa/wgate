@@ -9,13 +9,12 @@ module Paynet
         @response_status = 0
         transaction_id = transaction.id
         transaction_state = PaynetTransaction.statuses[transaction.status]
-        state_error_status = 'Success'
+        state_error_status = transaction.response_status
         state_error_message = ''
       else
         @response_status = 103
         transaction_id = 0
         transaction_state = PaynetTransaction::STATUS_ERROR
-        state_error_status = 'Error'
         state_error_message = "Transaction with id=#{paynet_transaction_id} wasn't found."
       end
     rescue => exception
@@ -23,7 +22,6 @@ module Paynet
       @response_status = 102
       transaction_id = 0
       transaction_state = PaynetTransaction::STATUS_ERROR
-      state_error_status = 'Error'
       state_error_message = 'Internal error'
     ensure
       response_params = {
@@ -32,7 +30,7 @@ module Paynet
         timeStamp: timestamp.strftime(DATE_FORMAT),
         providerTrnId: transaction_id,
         transactionState: transaction_state,
-        transactionStateErrorStatus: state_error_status,
+        transactionStateErrorStatus: state_error_status || @response_status,
         transactionStateErrorMsg: state_error_message
       }
       log_params(paynet_transaction_id, response_params)
