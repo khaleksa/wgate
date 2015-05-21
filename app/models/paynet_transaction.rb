@@ -6,7 +6,7 @@ class PaynetTransaction < ActiveRecord::Base
 
   validates_presence_of :paynet_id, :amount, :account_id, :provider_id
 
-  after_create :create_payment #, :notify_provider
+  after_create :create_payment, :notify_provider
 
   STATUS_ERROR = 0
   enum status: {
@@ -23,14 +23,9 @@ class PaynetTransaction < ActiveRecord::Base
       after do
         self.payment.cancel
         self.payment.save!
+        notify_provider
       end
     end
-  end
-
-  def cancel
-    self.status = STATUS[:cancelled]
-    self.save!
-    # notify_provider
   end
 
   def self.exist?(paynet_transaction_id)
@@ -38,8 +33,7 @@ class PaynetTransaction < ActiveRecord::Base
   end
 
   def notify_provider
-    return if self.status == STATUS[:error]
-    TransactionNotificationJob.perform_later provider.sync_transaction_url, sync_json_data
+    # TransactionNotificationJob.perform_later provider.sync_transaction_url, sync_json_data
   end
 
   #TODO: check status
