@@ -130,7 +130,7 @@ describe Paynet::PaynetsController do
       expect(response_data.include?(:time_stamp)).to be_truthy
       expect(response_data[:provider_trn_id].to_i).to eq(transaction.id)
       expect(response_data[:transaction_state].to_i).to eq(PaynetTransaction.statuses[transaction.status])
-      expect(response_data[:transaction_state_error_status]).to eq('Success')
+      expect(response_data[:transaction_state_error_status].to_i).to eq(0)
       expect(response_data.include?(:transaction_state_error_msg)).to be_truthy
     end
   end
