@@ -47,6 +47,10 @@ class Paynet::PaynetsController < ApplicationController
     return Paynet::GetStatement.new(params, provider_id).build_response
   end
 
+  def get_information(params, provider_id)
+    return Paynet::GetInformation.new(params, provider_id).build_response
+  end
+
   def check_ip
     return if Rails.env.development?
     ip_list = PAYNET_CONFIG[:ip_list]

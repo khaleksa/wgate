@@ -14,7 +14,7 @@ describe Paynet::PaynetsController do
   let(:psw_tom) { 'tom_uz' }
   let!(:provider) { FactoryGirl.create(:provider, id: 2, name: 'tom', password: 'tom_psw', paynet_params: {user_name: user_tom, password: psw_tom}) }
   let!(:user_account) { '1001' }
-  let!(:user) { FactoryGirl.create(:user, provider_id: provider.id, account: user_account) }
+  let!(:user) { FactoryGirl.create(:user, provider_id: provider.id, account: user_account, first_name: 'Bob', last_name: 'John') }
 
   let(:remote_ip) { '213.230.106.113' }
   let(:client) { Savon::Client.new({ :wsdl => "http://application/paynet/tom/wsdl" }) }
@@ -172,40 +172,30 @@ describe Paynet::PaynetsController do
     end
   end
 
-  # describe 'soap method: GetInformation' do
-  #   let(:transaction_status) { PaynetTransaction::STATUS[:commit] }
-  #   let!(:transaction_1) { create_paynet_transaction_at(4.days.ago, paynet_id: 111, status: transaction_status, amount: 1000) }
-  #   let!(:transaction_2) { create_paynet_transaction_at(3.days.ago, paynet_id: 222, status: transaction_status, amount: 2000) }
-  #   let!(:transaction_3) { create_paynet_transaction_at(1.days.ago, paynet_id: 333, status: transaction_status, amount: 3000) }
-  #
-  #   let(:params) do
-  #     {
-  #         password: 'tom10v000317',
-  #         usernamer: 'TomUz2014',
-  #         parameters: { paramKey: 'client_id', paramValue: '1234' },
-  #         serviceId: 1
-  #     }
-  #   end
-  #   let!(:response) { client.call(:get_information, message: params) }
-  #   let(:response_data) { response.body[:get_statement_result] }
-  #
-  #   it 'returns valid response' do
-  #     expect(response_data[:error_msg]).to eq 'Успешно.'
-  #     expect(response_data[:status].to_i).to eq 0
-  #     expect(response_data.include?(:time_stamp)).to be_truthy
-  #   end
-  #
-  #   let(:parameters) { response_data[:parameters] }
-  #   it 'returns client data' do
-  #     expect(parameters.size).to eq(2)
-  #     expect(parameters[0]).to  eq(
-  #                                   :param_key   => 'balance',
-  #                                   :param_value => '111'
-  #                               )
-  #     expect(parameters[1]).to  eq(
-  #                                   :param_key   => 'name',
-  #                                   :param_value => 'Bob'
-  #                               )
-  #   end
-  # end
+  describe 'soap method: GetInformation' do
+    let(:params) do
+      {
+          password: psw_tom,
+          username: user_tom,
+          parameters: { paramKey: 'account_id', paramValue: user_account },
+          serviceId: 1
+      }
+    end
+    let!(:response) { client.call(:get_information, message: params) }
+    let(:response_data) { response.body[:get_information_result] }
+
+    it 'returns valid response' do
+      expect(response_data[:error_msg]).to eq 'Успешно.'
+      expect(response_data[:status].to_i).to eq 0
+      expect(response_data.include?(:time_stamp)).to be_truthy
+    end
+
+    let(:parameters) { response_data[:parameters] }
+    it 'returns client data' do
+      expect(parameters).to  eq(
+                                    :param_key   => 'name',
+                                    :param_value => user.full_name
+                                )
+    end
+  end
 end

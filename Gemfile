@@ -16,8 +16,10 @@ gem 'jquery-rails'
 gem 'turbolinks'
 gem 'jbuilder', '~> 2.0'
 
-gem 'aasm'
 gem 'sidekiq'
+gem 'sinatra', :require => nil # sidekiq admin
+
+gem 'aasm'
 gem 'httparty'
 gem 'activerecord-import'
 
