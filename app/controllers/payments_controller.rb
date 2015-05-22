@@ -15,18 +15,6 @@ class PaymentsController < ApplicationController
   end
 
   private
-  def trancate_transaction_data(transactions)
-    transactions.map do |t|
-      {
-          :transaction_id => t['transaction_id'],
-          :account => t['account'],
-          :status => t['transaction_status'], #todo:: check status of transaction
-          :amount => t['amount'],
-          :timestamp => t['timestamp']
-      }
-    end
-  end
-
   def missed_transactions_params?
     mandatory_params = [:name, :password, :start_date, :end_date]
     mandatory_params.detect{ |p| params[p].blank? }
