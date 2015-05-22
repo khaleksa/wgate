@@ -3,9 +3,9 @@ require 'rails_helper'
 describe Builder::Users do
   subject { described_class.new(provider.id) }
 
-  let(:user_tom) { 'Tom' }
+  let(:provider_tom) { 'Tom' }
   let(:psw_tom) { 'tom_uz' }
-  let!(:provider) { FactoryGirl.create(:provider, name: user_tom, password: psw_tom, sync_user_url: 'http://example1.com/sync_users') }
+  let!(:provider) { FactoryGirl.create(:provider, name: provider_tom, password: psw_tom, sync_user_url: 'http://example1.com/sync_users') }
 
   let!(:stubbed_response) do
     fixture = File.read(File.expand_path('fixtures/sync_users_response.json', File.dirname(__FILE__)))

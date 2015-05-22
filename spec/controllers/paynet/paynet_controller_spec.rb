@@ -20,7 +20,7 @@ describe Paynet::PaynetsController do
   let(:client) { Savon::Client.new({ :wsdl => "http://application/paynet/tom/wsdl" }) }
 
   before do
-    ActionDispatch::Request.any_instance.stub(:remote_ip).and_return(remote_ip)
+    allow_any_instance_of(ActionDispatch::Request).to receive(:remote_ip).and_return(remote_ip)
   end
 
   describe 'soap method: PerformTransaction' do

@@ -28,31 +28,37 @@ module Builder
     # Response data format:
     # {
     #     "data": [
-    #         {"id": "1111", "status": "deleted"},
-    #         {"id": "2222", "status": "added"}
+    #         {"id": "1111", "status": "deleted", "name": "Tom", "family": "Smith"},
+    #         {"id": "2222", "status": "added", "name": "Bill", "family": "Gates"}
     #     ]
     # }
-    def create_or_delete(users)
-      insert_accounts = []
+    def create_or_delete(data)
+      insert_users = []
       delete_accounts = []
-      users.each do |user|
-        if user['status'] == 'added'
-          insert_accounts<<user['id']
+      data.each do |row|
+        if row['status'] == 'added'
+          user = {}
+          user[:account] = row['id']
+          user[:first_name] = row['name']
+          user[:last_name] = row['family']
+          insert_users<<user
         else
-          delete_accounts<<user['id']
+          delete_accounts<<row['id']
         end
       end
-      add_users(insert_accounts)
+      add_users(insert_users)
       delete_users(delete_accounts)
     end
 
-    def add_users(accounts)
+    def add_users(users)
       exist_accounts = User.where(provider_id: provider.id).pluck(:account)
-      accounts = accounts - exist_accounts
 
-      columns = [:provider_id, :account]
+      columns = [:provider_id, :account, :first_name, :last_name]
       values = []
-      accounts.each { |account| values<<[provider.id, account] }
+      users.each do |user|
+        next if exist_accounts.include?(user[:account])
+        values<<[provider.id, user[:account], user[:first_name], user[:last_name]]
+      end
       ::User.import columns, values, validate: true
     end
 
