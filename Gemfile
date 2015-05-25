@@ -1,5 +1,8 @@
 source 'https://rubygems.org'
 
+gem 'sidekiq'
+gem 'sinatra', :require => nil # sidekiq admin
+
 gem 'rails', '4.2.1'
 
 gem 'pg'
@@ -15,9 +18,6 @@ gem 'coffee-rails', '~> 4.1.0'
 gem 'jquery-rails'
 gem 'turbolinks'
 gem 'jbuilder', '~> 2.0'
-
-gem 'sidekiq'
-gem 'sinatra', :require => nil # sidekiq admin
 
 gem 'aasm'
 gem 'httparty'
@@ -35,8 +35,6 @@ group :development, :test do
   gem 'factory_girl'
   gem 'factory_girl_rails'
   gem 'factory_girl_rspec'
-
-  gem 'webmock'
 end
 
 group :test do
@@ -46,6 +44,8 @@ group :test do
 
   gem 'httpi', :git => 'https://github.com/savonrb/httpi.git'
   gem 'savon', '~> 2.0'
+
+  gem 'webmock'
 end
 
 group :development do

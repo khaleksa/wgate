@@ -41,7 +41,7 @@ describe Paynet::PaynetsController do
 
     context "when user's account exists" do
       it 'returns valid response' do
-        expect(perform_transaction_result[:error_msg]).to eq 'Успешно.'
+        expect(perform_transaction_result[:error_msg]).to eq 'Success.'
         expect(perform_transaction_result[:status].to_i).to eq 0
         expect(perform_transaction_result.include?(:time_stamp)).to be_truthy
         expect(perform_transaction_result.include?(:provider_trn_id)).to be_truthy
@@ -72,7 +72,7 @@ describe Paynet::PaynetsController do
       end
 
       it 'returns invalid response' do
-        expect(perform_transaction_result[:error_msg]).to eq 'Клиент не найден.'
+        expect(perform_transaction_result[:error_msg]).to eq 'Client was not found.'
         expect(perform_transaction_result[:status].to_i).to eq 302
       end
     end
@@ -94,7 +94,7 @@ describe Paynet::PaynetsController do
     let(:cancel_transaction_result) { response.body[:cancel_transaction_result] }
 
     it 'returns valid response' do
-      expect(cancel_transaction_result[:error_msg]).to eq 'Успешно.'
+      expect(cancel_transaction_result[:error_msg]).to eq 'Success.'
       expect(cancel_transaction_result[:status].to_i).to eq 0
       expect(cancel_transaction_result.include?(:time_stamp)).to be_truthy
       expect(cancel_transaction_result[:transaction_state].to_i).to eq(2)
@@ -109,7 +109,7 @@ describe Paynet::PaynetsController do
   describe 'soap method: CheckTransaction' do
     let(:transaction_id) { '123456' }
     let(:status_ok) { 0 }
-    let(:status_ok_msg) { 'Успешно.' }
+    let(:status_ok_msg) { 'Success.' }
     let!(:transaction) { FactoryGirl.create(:paynet_transaction, paynet_id: transaction_id, provider_id: provider.id, response_status: status_ok, response_message: status_ok_msg) }
     let(:params) do
       {
@@ -155,7 +155,7 @@ describe Paynet::PaynetsController do
     let(:response_data) { response.body[:get_statement_result] }
 
     it 'returns valid response' do
-      expect(response_data[:error_msg]).to eq 'Успешно.'
+      expect(response_data[:error_msg]).to eq 'Success.'
       expect(response_data[:status].to_i).to eq 0
       expect(response_data.include?(:time_stamp)).to be_truthy
     end
@@ -185,7 +185,7 @@ describe Paynet::PaynetsController do
     let(:response_data) { response.body[:get_information_result] }
 
     it 'returns valid response' do
-      expect(response_data[:error_msg]).to eq 'Успешно.'
+      expect(response_data[:error_msg]).to eq 'Success.'
       expect(response_data[:status].to_i).to eq 0
       expect(response_data.include?(:time_stamp)).to be_truthy
     end

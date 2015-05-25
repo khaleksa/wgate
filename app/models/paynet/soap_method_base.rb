@@ -5,16 +5,16 @@ module Paynet
 
   class SoapMethodBase
     STATUS_MESSAGES = {
-        0 => 'Успешно.',
-        102 => 'Системная ошибка.',
-        103 => 'Транзакция не найдена.',
-        201 => 'Транзакция уже существует.',
-        202 => 'Транзакция уже отменена.',
-        302 => 'Клиент не найден.',
-        411 => 'Не заданы один или несколько обязательных параметров.',
-        412 => 'Неверный логин.',
-        413 => 'Неверная сумма. Минимальная сумма - 1000 сум.',
-        414 => 'Неверный формат даты и времени.'
+        0 => 'Success.',
+        102 => 'System error.',
+        103 => 'Transaction was not found.',
+        201 => 'This transaction already exists',
+        202 => 'This transaction has already been cancelled',
+        302 => 'Client was not found.',
+        411 => 'Do not set one or more of the required parameters.',
+        412 => 'The login is invalid.',
+        413 => 'The amount is invalid.',
+        414 => 'Invalid date format.'
     }
 
     attr_accessor :params, :provider

@@ -7,6 +7,9 @@ class Paynet::PaynetsController < ApplicationController
   XML_HEADER = "<?xml version='1.0' encoding='UTF-8'?>\n"
 
   def wsdl(provider_id)
+    logger = ::Logger.new("#{Rails.root}/log/paynet_#{Time.zone.now.month}_#{Time.zone.now.year}.log")
+    logger.info("------------------------- wsdl from ip=#{request.remote_ip} ----------------------")
+
     wsdl_path = File.join Rails.public_path, 'ProviderWebService.wsdl'
     wsdl_file = File.read wsdl_path
 

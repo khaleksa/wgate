@@ -12,7 +12,7 @@ module Builder
       params = {
           :name => provider.name,
           :password => provider.password,
-          :sync_date => provider.sync_user_timestamp
+          :sync_date => provider.sync_user_timestamp.present? ? provider.sync_user_timestamp.strftime('%d-%m-%Y %H:%M') : ''
       }
 
       sync_timestamp = Time.zone.now
