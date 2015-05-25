@@ -15,7 +15,7 @@ module Paynet
           errorMsg: STATUS_MESSAGES[@response_status],
           status: @response_status,
           timeStamp: timestamp.strftime(DATE_FORMAT),
-          parameters: pack_params(:param_key   => 'name', :param_value => user_name)
+          parameters: pack_params(:paramKey => 'name', :paramValue => user_name)
       }
       log_params(response_params)
       return envelope('GetInformationResult', pack_params(response_params))
