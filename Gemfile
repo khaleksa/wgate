@@ -23,6 +23,8 @@ gem 'aasm'
 gem 'httparty'
 gem 'activerecord-import'
 
+gem 'whenever', :require => false
+
 group :development, :test do
   gem 'pry'
   gem 'pry-doc'

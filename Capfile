@@ -3,6 +3,8 @@ require 'capistrano/deploy'
 require 'capistrano/rvm'
 require 'capistrano/bundler'
 require 'capistrano/rails'
+require 'whenever/capistrano'
+
 # Load DSL and set up stages
 
 # Include tasks from other gems included in your Gemfile
