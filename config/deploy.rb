@@ -15,8 +15,11 @@ set :rvm_ruby_version, '2.2.1'
 set :rvm_custom_path, '~/.rvm'
 set :deploy_to, '/var/www/paysys'
 
+set :pty,  false
+
 namespace :deploy do
 
+  desc 'Run seeds'
   task :seed do
     on roles(:all) do
       within release_path do
@@ -64,6 +67,16 @@ namespace :deploy do
     end
   end
 
+  desc "Update crontab with whenever"
+  task :update_cron do
+    on roles(:app) do
+      within current_path do
+        execute :bundle, :exec, "whenever --update-crontab #{fetch(:application)}"
+      end
+    end
+  end
+
+  after :finishing, 'deploy:update_cron'
   after :finishing, 'deploy:cleanup'
   after :finishing, 'deploy:restart'
 

@@ -4,6 +4,8 @@ require 'capistrano/rvm'
 require 'capistrano/bundler'
 require 'capistrano/rails'
 require 'whenever/capistrano'
+require 'capistrano/sidekiq'
+require 'capistrano/sidekiq/monit'
 
 # Load DSL and set up stages
 
