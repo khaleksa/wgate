@@ -1,4 +1,5 @@
 class PaymentsController < ApplicationController
+  skip_before_action :verify_authenticity_token
 
   def report
     return render_status 400 if missed_transactions_params?
