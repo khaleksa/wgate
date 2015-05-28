@@ -9,4 +9,8 @@ class Provider < ActiveRecord::Base
   def find_user_by(account)
     self.users.where('users.account=?', account).first
   end
+
+  def valid_psw_hash?(psw_hash)
+    Digest::MD5.hexdigest(self.password) == psw_hash
+  end
 end

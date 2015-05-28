@@ -12,7 +12,7 @@ describe UsersController do
     let(:family) { 'Jones' }
     let(:params) {{
       name: provider_name,
-      password: provider_psw,
+      password: Digest::MD5.hexdigest(provider_psw),
       user: {
           id: account,
           name: name,

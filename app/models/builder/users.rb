@@ -11,7 +11,7 @@ module Builder
     def sync
       params = {
           :name => provider.name,
-          :password => provider.password,
+          :password => Digest::MD5.hexdigest(provider.password),
           :sync_date => provider.sync_user_timestamp.present? ? provider.sync_user_timestamp.strftime('%d-%m-%Y %H:%M') : ''
       }
 

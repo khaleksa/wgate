@@ -7,6 +7,10 @@ class ApplicationController < ActionController::Base
     Time.zone.parse(date.to_s)
   end
 
+  def formated_date(date)
+    date.strftime('%d-%m-%Y %H:%M')
+  end
+
   private
   def render_status(status)
     render :nothing => true, :status => status

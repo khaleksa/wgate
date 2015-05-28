@@ -2,7 +2,7 @@ class UsersController < ApplicationController
 
   def create
     provider = get_provider
-    return render_status 401 unless provider
+    return render_status 401 unless provider && provider.valid_psw_hash?(params[:password])
 
     user_data = user_params
     user = User.create do |u|
@@ -35,6 +35,6 @@ class UsersController < ApplicationController
   end
 
   def get_provider
-    Provider.where('name = ? AND password = ?', params[:name], params[:password]).first
+    Provider.where('name = ?', params[:name]).first
   end
 end
