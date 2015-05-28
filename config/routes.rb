@@ -9,6 +9,10 @@ Rails.application.routes.draw do
     get :report
   end
 
+  resources :users, only: [:create, :destroy] do
+
+  end
+
   namespace :paynet do
     resource :tom, only: [] do
       get :wsdl
