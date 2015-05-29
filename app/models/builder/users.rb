@@ -18,7 +18,7 @@ module Builder
       sync_timestamp = Time.zone.now
       result = HTTParty.get(provider.sync_user_url, query: params)
       raise RuntimeError, result.parsed_response if result.code >= 400
-      create_or_delete(result.parsed_response['data'].to_a)
+      create_or_delete(result.parsed_response.to_a)
       provider.update_attributes(sync_user_timestamp: sync_timestamp)
     rescue => e
       Rails.logger.error "Builder::Users#sync has got exception - #{e.message}"
@@ -26,12 +26,10 @@ module Builder
 
     private
     # Response data format:
-    # {
-    #     "data": [
-    #         {"id": "1111", "status": "deleted", "name": "Tom", "family": "Smith"},
-    #         {"id": "2222", "status": "added", "name": "Bill", "family": "Gates"}
-    #     ]
-    # }
+    # [
+    #     {"id": "1111", "status": "deleted", "name": "Tom", "family": "Smith"},
+    #     {"id": "2222", "status": "added", "name": "Bill", "family": "Gates"}
+    # ]
     def create_or_delete(data)
       insert_users = []
       delete_accounts = []

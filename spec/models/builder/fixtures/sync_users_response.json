@@ -1,9 +1,7 @@
-{
-  "data": [
+[
     {"id": "1111", "status": "added", "name": "Asif", "family": "Khan"},
     {"id": "2222", "status": "added", "name": "Bob", "family": "Perper"},
     {"id": "3333", "status": "deleted", "name": "Alice", "family": "Smith"},
     {"id": "4444", "status": "added", "name": "David", "family": "Chip"},
     {"id": "5555", "status": "deleted", "name": "Joe", "family": "Black"}
-  ]
-}
+]
