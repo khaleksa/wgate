@@ -52,48 +52,57 @@ describe PaymentsController do
         expect(payments[0]['payment_system']).to eq(payment.payment_system)
       end
     end
-    #
-    # context 'with start date' do
-    #   let(:start_date) { 5.days.ago }
-    #   let(:end_date) { '' }
-    #
-    #   it 'returns valid json response' do
-    #     send_valid_request
-    #
-    #     expect(response.status).to eq 200
-    #     expect(response.header['Content-Type']).to include 'application/json'
-    #     expect(response_data).to be_a(Array)
-    #     expect(response_data.size).to eq(3)
-    #   end
-    # end
-    #
-    # context 'with end date' do
-    #   let(:start_date) { '' }
-    #   let(:end_date) { 2.days.ago }
-    #
-    #   it 'returns valid json response' do
-    #     send_valid_request
-    #
-    #     expect(response.status).to eq 200
-    #     expect(response.header['Content-Type']).to include 'application/json'
-    #     expect(response_data).to be_a(Array)
-    #     expect(response_data.size).to eq(3)
-    #   end
-    # end
-    #
-    # context 'without start and end date' do
-    #   let(:start_date) { '' }
-    #   let(:end_date) { '' }
-    #
-    #   it 'returns valid json response' do
-    #     send_valid_request
-    #
-    #     expect(response.status).to eq 200
-    #     expect(response.header['Content-Type']).to include 'application/json'
-    #     expect(response_data).to be_a(Array)
-    #     expect(response_data.size).to eq(4)
-    #   end
-    # end
+
+    context 'with start date' do
+      let(:start_date) { 5.days.ago }
+      let(:end_date) { '' }
+
+      it 'returns valid json response' do
+        send_valid_request
+
+        expect(response.status).to eq 200
+        expect(response.header['Content-Type']).to include 'application/json'
+        expect(response_data).to be_a(Hash)
+        expect(response_data.size).to eq(2)
+
+        expect(payments).to be_a(Array)
+        expect(payments.size).to eq(3)
+      end
+    end
+
+    context 'with end date' do
+      let(:start_date) { '' }
+      let(:end_date) { 2.days.ago }
+
+      it 'returns valid json response' do
+        send_valid_request
+
+        expect(response.status).to eq 200
+        expect(response.header['Content-Type']).to include 'application/json'
+        expect(response_data).to be_a(Hash)
+        expect(response_data.size).to eq(2)
+
+        expect(payments).to be_a(Array)
+        expect(payments.size).to eq(3)
+      end
+    end
+
+    context 'without start and end date' do
+      let(:start_date) { '' }
+      let(:end_date) { '' }
+
+      it 'returns valid json response' do
+        send_valid_request
+
+        expect(response.status).to eq 200
+        expect(response.header['Content-Type']).to include 'application/json'
+        expect(response_data).to be_a(Hash)
+        expect(response_data.size).to eq(2)
+
+        expect(payments).to be_a(Array)
+        expect(payments.size).to eq(4)
+      end
+    end
   end
 
 end

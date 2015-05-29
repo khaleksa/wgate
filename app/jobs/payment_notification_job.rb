@@ -1,4 +1,4 @@
-class TransactionNotificationJob < ActiveJob::Base
+class PaymentNotificationJob < ActiveJob::Base
   queue_as :default
 
   def perform(url, send_data)

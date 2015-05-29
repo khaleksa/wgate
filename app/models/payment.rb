@@ -18,4 +18,14 @@ class Payment < ActiveRecord::Base
       transitions :from => [:pending], :to => :commited
     end
   end
+
+  def json_data
+    {
+        :id => self.id,
+        :payment_system => self.payment_system,
+        :account_id => self.account_id,
+        :amount => self.amount,
+        :status => self.status
+    }.to_json
+  end
 end

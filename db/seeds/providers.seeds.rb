@@ -22,7 +22,7 @@ Provider.seed(:id,
                   name: 'itest',
                   password: '123456',
                   sync_transaction_url: '',
-                  sync_user_url: '',
+                  sync_user_url: 'http://itest.uz/pays/users',
                   click_params: { secret_key: 'oG4VyyfJq2v#0FdIr@Ll2LAq' },
                   paynet_params: { user_name: 'itest', password: 'Kjwe1Djk52dwp_tw' }
               }

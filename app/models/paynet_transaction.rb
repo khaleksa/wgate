@@ -33,28 +33,19 @@ class PaynetTransaction < ActiveRecord::Base
   end
 
   def notify_provider
-    # TransactionNotificationJob.perform_later provider.sync_transaction_url, sync_json_data
-  end
-
-  #TODO: check status
-  def sync_json_data
-    {
-        :transaction_id => self.id,
-        :account => self.account_id,
-        :status => (status == 1 ? 'create' : 'cancel'),
-        :amount => self.amount,
-        :timestamp => self.updated_at
-    }.to_json
+    PaymentNotificationJob.perform_later provider.sync_transaction_url, self.payment.json_data
   end
 
   private
   def create_payment
-    self.build_payment do|p|
+    payment = self.build_payment do|p|
       p.account_id = self.account_id
       p.amount = self.amount
       p.status = self.status
       p.payment_system = 'paynet'
       p.provider_id = self.provider_id
     end.save!
+
+    notify_provider
   end
 end

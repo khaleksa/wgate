@@ -21,6 +21,6 @@
 
 set :output, "log/cron.log"
 
-every 2.hours do
+every 5.minutes do
   rake 'provider:sync_users'
 end
