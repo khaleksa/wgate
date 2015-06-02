@@ -25,11 +25,6 @@ module Builder
     end
 
     private
-    # Response data format:
-    # [
-    #     {"id": "1111", "status": "deleted", "name": "Tom", "family": "Smith"},
-    #     {"id": "2222", "status": "added", "name": "Bill", "family": "Gates"}
-    # ]
     def create_or_delete(data)
       insert_users = []
       delete_accounts = []
