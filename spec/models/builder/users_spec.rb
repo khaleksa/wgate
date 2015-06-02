@@ -20,7 +20,7 @@ describe Builder::Users do
         with(
             query: {
                 :name => provider.name,
-                :password => Digest::MD5.hexdigest(provider.password),
+                :password => provider.password_md5,
                 :sync_date => provider.sync_user_timestamp
             }
         ).

@@ -6,7 +6,7 @@ class PaynetTransaction < ActiveRecord::Base
 
   validates_presence_of :paynet_id, :amount, :account_id, :provider_id
 
-  after_create :create_payment, :notify_provider
+  after_create :create_payment
 
   STATUS_ERROR = 0
   enum status: {
@@ -33,7 +33,7 @@ class PaynetTransaction < ActiveRecord::Base
   end
 
   def notify_provider
-    PaymentNotificationJob.perform_later provider.sync_transaction_url, self.payment.json_data
+    PaymentNotificationJob.perform_later provider.id, self.payment.sync_data
   end
 
   private
@@ -45,7 +45,6 @@ class PaynetTransaction < ActiveRecord::Base
       p.payment_system = 'paynet'
       p.provider_id = self.provider_id
     end.save!
-
     notify_provider
   end
 end

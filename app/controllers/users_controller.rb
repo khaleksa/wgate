@@ -23,7 +23,7 @@ class UsersController < ApplicationController
     provider = get_provider
     return render_status 401 unless provider
 
-    user = User.where(account: params[:id]).first
+    user = User.where(account: params[:id]).where(provider_id: provider.id).first
     return render_status 404 unless user
 
     User.destroy(user.id)

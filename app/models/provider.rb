@@ -11,6 +11,10 @@ class Provider < ActiveRecord::Base
   end
 
   def valid_psw_hash?(psw_hash)
-    Digest::MD5.hexdigest(self.password) == psw_hash
+    password_md5 == psw_hash
+  end
+
+  def password_md5
+    Digest::MD5.hexdigest(self.password)
   end
 end
