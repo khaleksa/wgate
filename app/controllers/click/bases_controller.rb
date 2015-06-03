@@ -23,12 +23,12 @@ class Click::BasesController < ApplicationController
   def sync
     click_data = click_params
     response = process_click_action(click_data)
-    log(click_data, response)
+    log_params(click_data, response)
     render json: response
   end
 
-  def set_secret_key(provider_id)
-    @secret_key = Provider.find(provider_id).click_params['secret_key']
+  def set_provider(provider_id)
+    @provider = Provider.find(provider_id)
   end
 
   private
@@ -54,8 +54,9 @@ class Click::BasesController < ApplicationController
     else
       error_response(-7)
     end
-  rescue
+  rescue => exception
     error_response(-7)
+    log("Click::BasesController#click_action_prepare Error: #{exception.message}")
   end
 
   def verify_prepare_data(click_data)
@@ -67,7 +68,7 @@ class Click::BasesController < ApplicationController
 
     sign = Digest::MD5.hexdigest(click_data[:click_trans_id] +
                                  click_data[:service_id] +
-                                 @secret_key +
+                                 @provider.click_params['secret_key'] +
                                  click_data[:merchant_trans_id] +
                                  click_data[:amount] +
                                  click_data[:action] +
@@ -111,8 +112,9 @@ class Click::BasesController < ApplicationController
       end
       return error_response(-9)
     end
-  rescue
+  rescue => exception
     error_response(-7)
+    log("Click::BasesController#click_action_complete Error: #{exception.message}")
   end
 
   def verify_complete_data(click_data)
@@ -123,7 +125,7 @@ class Click::BasesController < ApplicationController
 
     sign = Digest::MD5.hexdigest(click_data[:click_trans_id] +
                                  click_data[:service_id] +
-                                 @secret_key +
+                                 @provider.click_params['secret_key'] +
                                  click_data[:merchant_trans_id] +
                                  click_data[:merchant_prepare_id] +
                                  click_data[:amount] +
@@ -137,6 +139,7 @@ class Click::BasesController < ApplicationController
   def build_transaction!(click_data)
     args = {
         click_id: click_data[:click_trans_id].to_i,
+        provider_id: @provider.id,
         click_paydoc_id: click_data[:click_paydoc_id].to_i,
         service_id: click_data[:service_id].to_i,
         account_id: click_data[:merchant_trans_id],
@@ -164,10 +167,14 @@ class Click::BasesController < ApplicationController
     }.to_json
   end
 
-  def log(params, response)
-    logger = ::Logger.new("#{Rails.root}/log/click_#{Time.zone.now.month}_#{Time.zone.now.year}.log")
-    logger.info("------------------ click_trans_id=#{params[:click_trans_id]} ------------------")
-    logger.info("click_params:#{params.to_s}")
-    logger.info("pays_response:#{response.to_s}")
+  def log_params(params, response)
+    data = "------------------ click_trans_id=#{params[:click_trans_id]} ------------------\n"
+    data += "click_params:#{params.to_s}\n"
+    data += "pays_response:#{response.to_s}\n"
+    log(data)
+  end
+
+  def log(data)
+    ::Logger.new("#{Rails.root}/log/click_#{Time.zone.now.month}_#{Time.zone.now.year}.log").info(data)
   end
 end

@@ -32,11 +32,11 @@ class PaynetTransaction < ActiveRecord::Base
     PaynetTransaction.find_by_paynet_id(paynet_transaction_id).present?
   end
 
+  private
   def notify_provider
     PaymentNotificationJob.perform_later provider.id, self.payment.sync_data
   end
 
-  private
   def create_payment
     payment = self.build_payment do|p|
       p.account_id = self.account_id

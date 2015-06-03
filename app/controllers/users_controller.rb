@@ -21,7 +21,7 @@ class UsersController < ApplicationController
 
   def destroy
     provider = get_provider
-    return render_status 401 unless provider
+    return render_status 401 unless provider && provider.valid_psw_hash?(params[:password])
 
     user = User.where(account: params[:id]).where(provider_id: provider.id).first
     return render_status 404 unless user

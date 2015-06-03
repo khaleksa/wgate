@@ -72,6 +72,7 @@ describe Click::ProvidersController do
     context 'with valid response' do
       let(:action) { 1 }
       let(:transaction) { FactoryGirl.create(:click_transaction, click_id: click_trans_id,
+                                                                 provider_id: provider.id,
                                                                  service_id: service_id,
                                                                  account_id: account_id,
                                                                  amount: amount,

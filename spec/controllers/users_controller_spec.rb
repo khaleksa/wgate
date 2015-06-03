@@ -12,7 +12,7 @@ describe UsersController do
     let(:family) { 'Jones' }
     let(:params) {{
       name: provider_name,
-      password: Digest::MD5.hexdigest(provider_psw),
+      password: provider.password_md5,
       user: {
           id: account,
           name: name,
@@ -41,7 +41,7 @@ describe UsersController do
     let(:params) {{
         id: account,
         name: provider_name,
-        password: provider_psw
+        password: provider.password_md5
     }}
 
     before do

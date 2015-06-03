@@ -3,6 +3,8 @@ class PaymentNotificationJob < ActiveJob::Base
 
   def perform(provider_id, payment_data)
     provider = Provider.find(provider_id)
+    return if provider.sync_transaction_url.blank?
+
     params = {
         :name => provider.name,
         :password => provider.password_md5
@@ -11,6 +13,7 @@ class PaymentNotificationJob < ActiveJob::Base
                            :query => params,
                            :body => payment_data.to_json,
                            :headers => { 'Content-Type' => 'application/json' })
+
     logger.info "Url: #{provider.sync_transaction_url}, SendData: #{params}, response status:#{result.code}"
   end
 end

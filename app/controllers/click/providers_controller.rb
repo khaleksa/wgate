@@ -1,20 +1,17 @@
 class Click::ProvidersController < Click::BasesController
 
   def erkatoy
-    provider_id = 1
-    set_secret_key(provider_id)
+    set_provider(1)
     sync
   end
 
   def tom
-    provider_id = 2
-    set_secret_key(provider_id)
+    set_provider(2)
     sync
   end
 
   def itest
-    provider_id = 3
-    set_secret_key(provider_id)
+    set_provider(3)
     sync
   end
 end
