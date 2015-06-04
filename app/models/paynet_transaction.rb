@@ -8,6 +8,7 @@ class PaynetTransaction < ActiveRecord::Base
 
   after_create :create_payment
 
+  TIYIN_PER_SUM = 100
   STATUS_ERROR = 0
   enum status: {
       commited: 1,
@@ -38,9 +39,9 @@ class PaynetTransaction < ActiveRecord::Base
   end
 
   def create_payment
-    payment = self.build_payment do|p|
+    self.build_payment do|p|
       p.account_id = self.account_id
-      p.amount = self.amount
+      p.amount = self.amount / TIYIN_PER_SUM
       p.status = self.status
       p.payment_system = 'paynet'
       p.provider_id = self.provider_id

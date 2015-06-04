@@ -55,7 +55,7 @@ group :development do
   gem 'capistrano-bundler', '~> 1.1.2'
   gem 'capistrano-rails', '~> 1.1.1'
   gem 'capistrano-rvm', github: "capistrano/rvm"
-  gem 'capistrano-sidekiq'
+  # gem 'capistrano-sidekiq'
 end
 
 group :production do

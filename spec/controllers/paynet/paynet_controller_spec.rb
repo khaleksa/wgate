@@ -37,6 +37,7 @@ describe Paynet::PaynetsController do
     end
     let(:response) { client.call(:perform_transaction, message: params) }
     let(:transaction) { PaynetTransaction.first }
+    let(:payment) { Payment.first }
     let(:perform_transaction_result) { response.body[:perform_transaction_result] }
 
     context "when user's account exists" do
@@ -55,6 +56,16 @@ describe Paynet::PaynetsController do
         expect(transaction.account_id).to eq(user_account)
         expect(transaction.user_name).to eq(user_tom)
         expect(transaction.password).to eq(psw_tom)
+      end
+
+      it 'create Payment' do
+        expect{ response }.to change{ Payment.all.size }.from(0).to(1)
+        expect(payment.paymentable_id).to eq(transaction.id)
+        expect(payment.paymentable_type).to eq('PaynetTransaction')
+        expect(payment.payment_system).to eq('paynet')
+        expect(payment.account_id).to eq(user_account)
+        expect(payment.amount).to eq(1500)
+        expect(payment.status).to eq('commited')
       end
     end
 
@@ -81,6 +92,7 @@ describe Paynet::PaynetsController do
   describe 'soap method: CancelTransaction' do
     let(:transaction_id) { '123456' }
     let!(:transaction) { FactoryGirl.create(:paynet_transaction, paynet_id: transaction_id, account_id: user_account, provider_id: provider.id) }
+    let(:payment) { Payment.first }
     let(:params) do
       {
         password: psw_tom,
@@ -103,6 +115,11 @@ describe Paynet::PaynetsController do
     it 'cancel Payment Transaction state status' do
       transaction.reload
       expect(transaction.cancelled?).to be_truthy
+    end
+
+    it 'cancel Payment status' do
+      payment.reload
+      expect(payment.cancelled?).to be_truthy
     end
   end
 

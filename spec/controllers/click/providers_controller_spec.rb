@@ -43,6 +43,9 @@ describe Click::ProvidersController do
           sign_string: sign_string
       }}
 
+      let(:transaction) { ClickTransaction.first }
+      let(:payment) { Payment.first }
+
       it 'returns valid json response' do
         sync_request
         expect(response.header['Content-Type']).to include 'application/json'
@@ -55,8 +58,7 @@ describe Click::ProvidersController do
       end
 
       it 'creates pending ClickTransaction' do
-        expect{sync_request}.to change{ ClickTransaction.all.size }.from(0).to(1)
-        transaction = ClickTransaction.first
+        expect{ sync_request }.to change{ ClickTransaction.all.size }.from(0).to(1)
         expect(transaction.status).to eq('pending')
         expect(transaction.click_id).to eq(click_trans_id)
         expect(transaction.service_id).to eq(service_id)
@@ -65,13 +67,23 @@ describe Click::ProvidersController do
         expect(transaction.action).to eq(action)
         expect(transaction.click_error).to eq(0)
       end
+
+      it 'create Payment' do
+        expect{ sync_request }.to change{ Payment.all.size }.from(0).to(1)
+        expect(payment.paymentable_id).to eq(transaction.id)
+        expect(payment.paymentable_type).to eq('ClickTransaction')
+        expect(payment.payment_system).to eq('click')
+        expect(payment.account_id).to eq(account_id)
+        expect(payment.amount).to eq(amount)
+        expect(payment.status).to eq('pending')
+      end
     end
   end
 
   describe 'Complete action' do
     context 'with valid response' do
       let(:action) { 1 }
-      let(:transaction) { FactoryGirl.create(:click_transaction, click_id: click_trans_id,
+      let!(:transaction) { FactoryGirl.create(:click_transaction, click_id: click_trans_id,
                                                                  provider_id: provider.id,
                                                                  service_id: service_id,
                                                                  account_id: account_id,
@@ -109,6 +121,10 @@ describe Click::ProvidersController do
         sync_request
         transaction.reload
         expect(transaction.status).to eq('commited')
+      end
+
+      it 'changes status of Payment from pending to commited' do
+        expect{ sync_request }.to change{ Payment.first.status }.from('pending').to('commited')
       end
     end
   end
