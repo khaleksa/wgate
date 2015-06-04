@@ -9,10 +9,11 @@ module Builder
     end
 
     def sync
+      sync_date = provider.sync_user_timestamp.present? ? provider.sync_user_timestamp.strftime('%d-%m-%Y %H:%M') : ''
       params = {
           :name => provider.name,
           :password => provider.password_md5,
-          :sync_date => provider.sync_user_timestamp.present? ? provider.sync_user_timestamp.strftime('%d-%m-%Y %H:%M') : ''
+          :sync_date => sync_date
       }
 
       sync_timestamp = Time.zone.now
@@ -20,8 +21,10 @@ module Builder
       raise RuntimeError, result.parsed_response if result.code >= 400
       create_or_delete(result.parsed_response.to_a)
       provider.update_attributes(sync_user_timestamp: sync_timestamp)
+
+      Rails.logger.info "Builder::Users#sync: provider=#{provider.name} send_sync_date=#{sync_date}\n provider_reponse=#{result.parsed_response}"
     rescue => e
-      Rails.logger.error "Builder::Users#sync has got exception - #{e.message},\n response = #{result.parsed_response}"
+      Rails.logger.error "Builder::Users#sync has got exception - #{e.message},\n provider_reponse = #{result.parsed_response}"
     end
 
     private

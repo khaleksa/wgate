@@ -14,6 +14,6 @@ class PaymentNotificationJob < ActiveJob::Base
                            :body => payment_data.to_json,
                            :headers => { 'Content-Type' => 'application/json' })
 
-    logger.info "Url: #{provider.sync_transaction_url}, SendData: #{params}, response status:#{result.code}"
+    Rails.logger.info "PaymentNotificationJob#perform: url: #{provider.sync_transaction_url}, send_data: #{payment_data}, response_status:#{result.code}"
   end
 end
