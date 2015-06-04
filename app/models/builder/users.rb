@@ -21,7 +21,7 @@ module Builder
       create_or_delete(result.parsed_response.to_a)
       provider.update_attributes(sync_user_timestamp: sync_timestamp)
     rescue => e
-      Rails.logger.error "Builder::Users#sync has got exception - #{e.message}"
+      Rails.logger.error "Builder::Users#sync has got exception - #{e.message},\n response = #{result.parsed_response}"
     end
 
     private
