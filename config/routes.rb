@@ -6,10 +6,11 @@ Rails.application.routes.draw do
   resource :test, only: [] do
     get 'echo', to: 'tests#echo_params'
     get 'payment', to: 'tests#payment_notification'
+    get 'users', to: 'tests#sync_users'
   end
 
   resource :payment, only: [] do
-    get :report
+    post :report
   end
 
   resources :users, only: [:create, :destroy] do

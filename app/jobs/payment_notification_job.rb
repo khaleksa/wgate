@@ -7,13 +7,14 @@ class PaymentNotificationJob < ActiveJob::Base
 
     params = {
         :name => provider.name,
-        :password => provider.password_md5
+        :password => provider.password_md5,
+        :payment => payment_data
     }
+
     result = HTTParty.post(provider.sync_transaction_url,
-                           :query => params,
-                           :body => payment_data.to_json,
+                           :body => params.to_json,
                            :headers => { 'Content-Type' => 'application/json' })
 
-    Rails.logger.info "PaymentNotificationJob#perform: url: #{provider.sync_transaction_url}, send_data: #{payment_data}, response_status:#{result.code}"
+    Rails.logger.info "PaymentNotificationJob#perform: url: #{provider.sync_transaction_url}, send_data: #{params}, response_status:#{result.code}"
   end
 end

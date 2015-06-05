@@ -21,13 +21,11 @@ class Payment < ActiveRecord::Base
 
   def sync_data
     {
-        payment: {
-            :id => self.id,
-            :payment_system => self.payment_system,
-            :account_id => self.account_id,
-            :amount => self.amount,
-            :status => self.status
-        }
+        :id => self.id,
+        :payment_system => self.payment_system,
+        :account_id => self.account_id,
+        :amount => self.amount,
+        :status => self.status
     }
   end
 end

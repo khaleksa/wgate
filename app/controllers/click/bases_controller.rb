@@ -175,6 +175,7 @@ class Click::BasesController < ApplicationController
   end
 
   def log(data)
-    ::Logger.new("#{Rails.root}/log/click_#{Time.zone.now.month}_#{Time.zone.now.year}.log").info(data)
+    log_file_path = Rails.env.production? ? '../log' : "#{Rails.root}/log"
+    ::Logger.new("#{log_file_path}/click_#{Time.zone.now.month}_#{Time.zone.now.year}.log").info(data)
   end
 end

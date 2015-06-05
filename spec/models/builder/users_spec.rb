@@ -10,19 +10,13 @@ describe Builder::Users do
   let!(:stubbed_response) do
     fixture = File.read(File.expand_path('fixtures/sync_users_response.json', File.dirname(__FILE__)))
 
-    params = {
-        :name => provider.name,
-        :password => provider.password,
-        :sync_date => provider.sync_user_timestamp
-    }.to_json
-
-    stub_request(:get, provider.sync_user_url).
+    stub_request(:post, provider.sync_user_url).
         with(
-            query: {
+            body: {
                 :name => provider.name,
                 :password => provider.password_md5,
-                :sync_date => provider.sync_user_timestamp
-            }
+                :sync_date => provider.sync_user_timestamp || ''
+            }.to_json
         ).
         to_return(:body => fixture, :status => 200, :headers => { 'Content-Type' => 'text/json' })
   end

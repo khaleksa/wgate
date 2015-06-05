@@ -14,10 +14,12 @@ module Builder
           :name => provider.name,
           :password => provider.password_md5,
           :sync_date => sync_date
-      }
+      }.to_json
 
       sync_timestamp = Time.zone.now
-      result = HTTParty.get(provider.sync_user_url, query: params)
+      result = HTTParty.post(provider.sync_user_url,
+                             body: params,
+                             headers: { 'Content-Type' => 'application/json' })
       raise RuntimeError, result.parsed_response if result.code >= 400
       create_or_delete(result.parsed_response.to_a)
       provider.update_attributes(sync_user_timestamp: sync_timestamp)

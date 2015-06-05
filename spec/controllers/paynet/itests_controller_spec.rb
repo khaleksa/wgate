@@ -6,10 +6,6 @@ describe Paynet::ItestsController do
   HTTPI.adapter = :rack
   HTTPI::Adapter::Rack.mount 'application', Paysys::Application
 
-  # TODO::
-  #  config.render_views
-  # controller spec vs request spec
-
   let(:user_tom) { 'itest' }
   let(:psw_tom) { '123456' }
   let!(:provider) { FactoryGirl.create(:provider, id: 3, name: 'itest', password: 'itest_psw', paynet_params: {user_name: user_tom, password: psw_tom}) }
