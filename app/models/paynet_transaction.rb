@@ -2,7 +2,7 @@ class PaynetTransaction < ActiveRecord::Base
   include AASM
 
   belongs_to :provider
-  has_one :payment, as: :paymentable
+  has_one :payment, as: :paymentable, dependent: :destroy
 
   validates_presence_of :paynet_id, :amount, :account_id, :provider_id
 

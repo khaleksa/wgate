@@ -3,7 +3,7 @@ Rails.application.routes.draw do
   mount Sidekiq::Web => '/sidekiq'
 
   root 'tests#index'
-  resource :test, only: [] do
+  resource :tests, only: [] do
     get 'echo', to: 'tests#echo_params'
     get 'payment', to: 'tests#payment_notification'
     get 'users', to: 'tests#sync_users'

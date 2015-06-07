@@ -2,7 +2,7 @@ class ClickTransaction < ActiveRecord::Base
   include AASM
 
   belongs_to :provider
-  has_one :payment, as: :paymentable
+  has_one :payment, as: :paymentable, dependent: :destroy
 
   validates_presence_of :click_id, :amount, :account_id, :provider_id
 
