@@ -175,7 +175,10 @@ class Click::BasesController < ApplicationController
   end
 
   def log(data)
-    log_file_path = Rails.env.production? ? '../log' : "#{Rails.root}/log"
-    ::Logger.new("#{log_file_path}/click_#{Time.zone.now.month}_#{Time.zone.now.year}.log").info(data)
+    log_path = Rails.env.production? ? '/var/www/paysys/log' : "#{Rails.root}/log"
+    log_file = "#{log_path}/click_#{Time.zone.now.month}_#{Time.zone.now.year}.log"
+    File.new(log_file, 'w') unless File.exist?(log_file)
+
+    ::Logger.new(log_file).info(data)
   end
 end
