@@ -7,7 +7,8 @@ class Paynet::PaynetsController < ApplicationController
   XML_HEADER = "<?xml version='1.0' encoding='UTF-8'?>\n"
 
   def wsdl(provider_id)
-    logger = ::Logger.new("#{Rails.root}/log/paynet_#{Time.zone.now.month}_#{Time.zone.now.year}.log")
+    set_log_file unless @log_file
+    logger = ::Logger.new(@log_file)
     logger.info("------------------------- wsdl from ip=#{request.remote_ip} ----------------------")
 
     wsdl_path = File.join Rails.public_path, 'ProviderWebService.wsdl'
@@ -60,8 +61,16 @@ class Paynet::PaynetsController < ApplicationController
     raise 'Not allowed' until ip_list.include? request.remote_ip
   end
 
+  def set_log_file
+    log_path = Rails.env.production? ? '/var/www/paysys/log' : "#{Rails.root}/log"
+    @log_file = "#{log_path}/paynet_#{Time.zone.now.month}_#{Time.zone.now.year}.log"
+    File.new(@log_file, 'w') unless File.exist?(@log_file)
+  end
+
   def log(action_name, provider_id, request)
-    logger = ::Logger.new("#{Rails.root}/log/paynet_#{Time.zone.now.month}_#{Time.zone.now.year}.log")
+    set_log_file unless @log_file
+
+    logger = ::Logger.new(@log_file)
     logger.info("------------------------- #{action_name.to_s} ----------------------")
     logger.info("#{Time.zone.now} - action:#{action_name.to_s} provider:#{provider_id} request:#{request.to_s}")
   end

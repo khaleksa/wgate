@@ -65,9 +65,15 @@ module Paynet
       raise ArgumentError.new("invalid value for Boolean: \"#{text}\"")
     end
 
+    def set_log_file
+      log_path = Rails.env.production? ? '/var/www/paysys/log' : "#{Rails.root}/log"
+      @log_file = "#{log_path}/paynet_#{Time.zone.now.month}_#{Time.zone.now.year}.log"
+      File.new(@log_file, 'w') unless File.exist?(@log_file)
+    end
+
     def log(data)
-      log_file_path = Rails.env.production? ? '../log' : "#{Rails.root}/log"
-      ::Logger.new("#{log_file_path}/paynet_#{Time.zone.now.month}_#{Time.zone.now.year}.log").info(data)
+      set_log_file unless @log_file
+      ::Logger.new(@log_file).info(data)
     end
   end
 
