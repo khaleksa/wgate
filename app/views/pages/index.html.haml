@@ -1,0 +1,43 @@
+.container.mtop50
+  .row.placeholders
+    -#.col-xs-6.col-sm-3.placeholder.text-center
+    -#  %img.center-block.img-responsive.img-circle{:alt => "Generic placeholder thumbnail", :src => "//placehold.it/200/6666ff/fff"}
+    -#    %h4 Label
+    -#    %span.text-muted Something else
+    -#.col-xs-6.col-sm-3.placeholder.text-center
+    -#  %img.center-block.img-responsive.img-circle{:alt => "Generic placeholder thumbnail", :src => "//placehold.it/200/66ff66/fff"}
+    -#    %h4 Label
+    -#    %span.text-muted Something else
+    -#.col-xs-6.col-sm-3.placeholder.text-center
+    -#  %img.center-block.img-responsive.img-circle{:alt => "Generic placeholder thumbnail", :src => "//placehold.it/200/6666ff/fff"}
+    -#    %h4 Label
+    -#    %span.text-muted Something else
+    -#.col-xs-6.col-sm-3.placeholder.text-center
+    -#  %img.center-block.img-responsive.img-circle{:alt => "Generic placeholder thumbnail", :src => "//placehold.it/200/66ff66/fff"}
+    -#    %h4 Label
+    -#    %span.text-muted Something else
+
+  %h2.sub-header Payments for itest.uz
+  %hr
+
+  .table-responsive
+    %table.table.table-striped
+      %thead
+        %tr
+          %th #
+          %th Timestamp
+          %th Payment System
+          %th Account
+          %th Amount
+      %tbody
+        -@payments.each_with_index do |payment, index|
+          %tr
+            %td= index + 1
+            %td= payment.created_at
+            %td= payment.payment_system
+            %td= payment.account_id
+            %td= payment.amount
+
+  .total-amount
+    %h4
+      Total amount = #{@total_amount}

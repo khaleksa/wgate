@@ -1,9 +1,10 @@
-class TestsController < ApplicationController
+class PagesController < ApplicationController
   skip_before_action :verify_authenticity_token
   force_ssl if: :ssl_configured?
 
   def index
-
+    @payments = Payment.where(provider_id: 3, status: 'commited')
+    @total_amount = @payments.pluck(:amount).sum
   end
 
   def echo_params

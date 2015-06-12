@@ -2,11 +2,9 @@ Rails.application.routes.draw do
   require 'sidekiq/web'
   mount Sidekiq::Web => '/sidekiq'
 
-  root 'tests#index'
-  resource :tests, only: [] do
-    get 'echo', to: 'tests#echo_params'
-    get 'payment', to: 'tests#payment_notification'
-    get 'users', to: 'tests#sync_users'
+  root 'pages#index'
+  resource :page, only: [] do
+    get 'echo', to: 'pages#echo_params'
   end
 
   resource :payment, only: [] do
