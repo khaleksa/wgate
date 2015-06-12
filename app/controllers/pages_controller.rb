@@ -1,4 +1,6 @@
 class PagesController < ApplicationController
+  http_basic_authenticate_with name: "pays", password: "system"
+
   skip_before_action :verify_authenticity_token
   force_ssl if: :ssl_configured?
 
