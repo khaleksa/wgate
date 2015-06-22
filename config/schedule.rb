@@ -21,6 +21,6 @@
 
 set :output, "log/cron.log"
 
-every 1.day, :at => '7:00 am' do
+every 1.day, :at => '11:52 am' do
   rake 'provider:sync_users'
 end
