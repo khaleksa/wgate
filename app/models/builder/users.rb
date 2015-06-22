@@ -21,12 +21,13 @@ module Builder
                              body: params,
                              headers: { 'Content-Type' => 'application/json' })
       raise RuntimeError, result.parsed_response if result.code >= 400
+
       create_or_delete(result.parsed_response.to_a)
       provider.update_attributes(sync_user_timestamp: sync_timestamp)
 
-      Rails.logger.info "Builder::Users#sync: provider=#{provider.name} send_sync_date=#{sync_date}\n provider_reponse=#{result.parsed_response}"
+      logger.info "Builder::Users#sync: provider=#{provider.name} send_sync_date=#{sync_date}\n provider_reponse=#{result.parsed_response}"
     rescue => e
-      Rails.logger.error "Builder::Users#sync has got exception - #{e.message},\n provider_reponse = #{result.parsed_response}"
+      logger.error "Builder::Users#sync: #{e.message},\n provider_reponse = #{result.parsed_response}"
     end
 
     private
@@ -62,6 +63,14 @@ module Builder
 
     def delete_users(accounts)
       User.destroy( User.where(provider_id: provider.id, account: accounts).pluck(:id) )
+    end
+
+    def logger
+      log_path = Rails.env.production? ? '/var/www/paysys/log' : "#{Rails.root}/log"
+      @log_file = "#{log_path}/sync_users.log"
+      File.new(@log_file, 'w') unless File.exist?(@log_file)
+
+      ::Logger.new(@log_file)
     end
   end
 end
