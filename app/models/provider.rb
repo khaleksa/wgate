@@ -7,7 +7,6 @@ class Provider < ActiveRecord::Base
   validates_uniqueness_of :name
 
   def find_user_by_account(value)
-    value = value.gsub(/^[+]/, '') if name == 'itest'
     self.users.where('users.account=?', value).first
   end
 

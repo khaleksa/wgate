@@ -86,6 +86,14 @@ describe Paynet::PaynetsController do
         expect(perform_transaction_result[:error_msg]).to eq 'Client was not found.'
         expect(perform_transaction_result[:status].to_i).to eq 302
       end
+
+      it 'creates AccessError' do
+        expect{ response }.to change{ AccessError.all.size }.from(0).to(1)
+        error = AccessError.first
+        expect(error.payment_system).to eq('paynet')
+        expect(error.provider_id).to eq(provider.id)
+        expect(error.account_id).to eq('111111')
+      end
     end
   end
 

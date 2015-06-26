@@ -3,9 +3,7 @@ Rails.application.routes.draw do
   mount Sidekiq::Web => '/sidekiq'
 
   root 'pages#index'
-  resource :page, only: [] do
-    get 'echo', to: 'pages#echo_params'
-  end
+  get 'errors', to: 'pages#access_errors'
 
   resource :payment, only: [] do
     post :report

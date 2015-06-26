@@ -29,7 +29,11 @@ module Paynet
       return 411 if !params_valid? || method_arguments['transactionId'].blank?
       return 412 unless authenticated?
       return 201 if PaynetTransaction.exist?(method_arguments['transactionId'])
-      return 302 unless provider.find_user_by_account(user_account)
+
+      unless provider.find_user_by_account(user_account)
+        AccessError.create(account_id: user_account, payment_system: 'paynet', provider_id: provider.id)
+        return 302
+      end
 
       return 0
     end
@@ -51,7 +55,9 @@ module Paynet
     end
 
     def user_account
-      method_arguments['parameters']['paramValue'].strip
+      account = method_arguments['parameters']['paramValue'].strip
+      account = account.gsub(/^[+]/, '') if provider.weak_account_verification
+      account
     end
 
     def log_params(tran_attr, response_params)

@@ -8,8 +8,11 @@ describe Paynet::ItestsController do
 
   let(:user_tom) { 'itest' }
   let(:psw_tom) { '123456' }
-  let!(:provider) { FactoryGirl.create(:provider, id: 3, name: 'itest', password: 'itest_psw', paynet_params: {user_name: user_tom, password: psw_tom}) }
+  let!(:provider) { FactoryGirl.create(:provider, id: 3, name: 'itest', password: 'itest_psw',
+                                        paynet_params: {user_name: user_tom, password: psw_tom},
+                                        weak_account_verification: true) }
   let!(:user_account) { 'Itest444' }
+  let!(:wrong_user_account) { "+#{user_account}" }
   let!(:user) { FactoryGirl.create(:user, provider_id: provider.id, account: user_account, first_name: 'Bob', last_name: 'John') }
 
   let(:remote_ip) { '213.230.106.113' }
@@ -25,7 +28,7 @@ describe Paynet::ItestsController do
           password: psw_tom,
           username: user_tom,
           amount: 150000,
-          parameters: { paramKey: 'account_id', paramValue: user_account },
+          parameters: { paramKey: 'account_id', paramValue: wrong_user_account },
           serviceId: 1,
           transactionId: 437,
           transactionTime: '2011-04-26T18:07:22'
@@ -70,6 +73,14 @@ describe Paynet::ItestsController do
       it 'returns invalid response' do
         expect(perform_transaction_result[:error_msg]).to eq 'Client was not found.'
         expect(perform_transaction_result[:status].to_i).to eq 302
+      end
+
+      it 'creates AccessError' do
+        expect{ response }.to change{ AccessError.all.size }.from(0).to(1)
+        error = AccessError.first
+        expect(error.payment_system).to eq('paynet')
+        expect(error.provider_id).to eq(provider.id)
+        expect(error.account_id).to eq('111111')
       end
     end
   end

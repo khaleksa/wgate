@@ -9,15 +9,7 @@ class PagesController < ApplicationController
     @total_amount = @payments.pluck(:amount).sum
   end
 
-  def echo_params
-    render json: params
-  end
-
-  def payment_notification
-    render :nothing => true, :status => 200
-  end
-
-  def sync_users
-    render :nothing => true, :status => 200
+  def access_errors
+    @account_errors = AccessError.where(provider_id: 3)
   end
 end

@@ -77,7 +77,10 @@ class Click::BasesController < ApplicationController
 
     return error_response(-2) if click_data[:amount].to_d <= CLICK_MIN_AMOUNT
 
-    return error_response(-5) unless @provider.find_user_by_account(click_data[:merchant_trans_id])
+    unless @provider.find_user_by_account(click_data[:merchant_trans_id])
+      AccessError.create(account_id: click_data[:merchant_trans_id], payment_system: 'click', provider_id: @provider.id)
+      return error_response(-5)
+    end
 
     transaction = ClickTransaction.find_by_click_id(click_data[:click_trans_id].to_i)
     return error_response(-4) if transaction.try(:commited?)
