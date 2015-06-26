@@ -6,7 +6,7 @@ module Paynet
 
     def build_response
       timestamp = Time.zone.now
-      user_name = @response_status == 0 ? provider.find_user_by(user_account).try(:full_name) : 'Unknown'
+      user_name = @response_status == 0 ? provider.find_user_by_account(user_account).try(:full_name) : 'Unknown'
     rescue => exception
       log("GetInformation#build_response Error: #{exception.message}")
       @response_status = 102
@@ -29,7 +29,7 @@ module Paynet
     def validate_status
       return 411 unless params_valid?
       return 412 unless authenticated?
-      return 302 unless provider.find_user_by(user_account)
+      return 302 unless provider.find_user_by_account(user_account)
 
       return 0
     end

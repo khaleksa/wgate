@@ -29,7 +29,7 @@ module Paynet
       return 411 if !params_valid? || method_arguments['transactionId'].blank?
       return 412 unless authenticated?
       return 201 if PaynetTransaction.exist?(method_arguments['transactionId'])
-      return 302 unless provider.find_user_by(user_account)
+      return 302 unless provider.find_user_by_account(user_account)
 
       return 0
     end

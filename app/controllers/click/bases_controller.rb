@@ -77,7 +77,7 @@ class Click::BasesController < ApplicationController
 
     return error_response(-2) if click_data[:amount].to_d <= CLICK_MIN_AMOUNT
 
-    return error_response(-5) unless User.where(account: click_data[:merchant_trans_id]).any?
+    return error_response(-5) unless @provider.find_user_by_account(click_data[:merchant_trans_id])
 
     transaction = ClickTransaction.find_by_click_id(click_data[:click_trans_id].to_i)
     return error_response(-4) if transaction.try(:commited?)
@@ -133,7 +133,7 @@ class Click::BasesController < ApplicationController
                                  click_data[:sign_time])
     return error_response(-1) unless sign == click_data[:sign_string]
 
-    return error_response(-5) unless User.where(account: click_data[:merchant_trans_id]).any?
+    return error_response(-5) unless @provider.find_user_by_account(click_data[:merchant_trans_id])
   end
 
   def build_transaction!(click_data)

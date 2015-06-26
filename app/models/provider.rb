@@ -6,8 +6,9 @@ class Provider < ActiveRecord::Base
   validates_presence_of :name, :password
   validates_uniqueness_of :name
 
-  def find_user_by(account)
-    self.users.where('users.account=?', account).first
+  def find_user_by_account(value)
+    value = value.gsub(/^[+]/, '') if name == 'itest'
+    self.users.where('users.account=?', value).first
   end
 
   def valid_psw_hash?(psw_hash)
