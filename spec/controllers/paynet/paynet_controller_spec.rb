@@ -6,10 +6,6 @@ describe Paynet::PaynetsController do
   HTTPI.adapter = :rack
   HTTPI::Adapter::Rack.mount 'application', Paysys::Application
 
-  # TODO::
-  #  config.render_views
-  # controller spec vs request spec
-
   let(:user_tom) { 'Tom' }
   let(:psw_tom) { 'tom_uz' }
   let!(:provider) { FactoryGirl.create(:provider, id: 2, name: 'tom', password: 'tom_psw', paynet_params: {user_name: user_tom, password: psw_tom}) }
