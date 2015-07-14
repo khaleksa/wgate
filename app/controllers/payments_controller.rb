@@ -9,7 +9,7 @@ class PaymentsController < ApplicationController
 
     start_date = parse_date(params[:start_date])
     end_date = parse_date(params[:end_date])
-    transactions = Statistics.transaction_for(provider.id, start_date, end_date)
+    transactions = Statistics.transaction_for(provider, start_date, end_date)
     response = {
       payments: transactions.to_a,
       timestamp: formated_date(Time.zone.now)
