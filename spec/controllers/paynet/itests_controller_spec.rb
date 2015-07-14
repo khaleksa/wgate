@@ -11,8 +11,8 @@ describe Paynet::ItestsController do
   let!(:provider) { FactoryGirl.create(:provider, id: 3, name: 'itest', password: 'itest_psw',
                                         paynet_params: {user_name: user_tom, password: psw_tom},
                                         weak_account_verification: true) }
-  let!(:user_account) { 'Itest444' }
-  let!(:wrong_user_account) { "+#{user_account}" }
+  let!(:user_account) { '901234567' }
+  let!(:long_user_account) { "+998#{user_account}" }
   let!(:user) { FactoryGirl.create(:user, provider_id: provider.id, account: user_account, first_name: 'Bob', last_name: 'John') }
 
   let(:remote_ip) { '213.230.106.113' }
@@ -28,7 +28,7 @@ describe Paynet::ItestsController do
           password: psw_tom,
           username: user_tom,
           amount: 150000,
-          parameters: { paramKey: 'account_id', paramValue: wrong_user_account },
+          parameters: { paramKey: 'account_id', paramValue: long_user_account },
           serviceId: 1,
           transactionId: 437,
           transactionTime: '2011-04-26T18:07:22'
