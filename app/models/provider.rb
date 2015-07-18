@@ -11,10 +11,10 @@ class Provider < ActiveRecord::Base
       # self.users.where("account like '%#{value}'").first
       value = value.gsub(/[^\d]+/,'')
       value = '998' + value if value.length < 12
-      if value.length != 12
-        return nil
-      else
+      if value.length == 12
         self.users.where('users.account=?', value).first
+      else
+        return nil
     else
       self.users.where('users.account=?', value).first
     end
