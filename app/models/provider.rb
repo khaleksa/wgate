@@ -8,7 +8,13 @@ class Provider < ActiveRecord::Base
 
   def find_user_by_account(value)
     if self.weak_account_verification
-      self.users.where("account like '%#{value}'").first
+      # self.users.where("account like '%#{value}'").first
+      value = value.gsub(/[^\d]+/,'')
+      value = '998' + value if value.length < 12
+      if value.length != 12
+        return nil
+      else
+        self.users.where('users.account=?', value).first
     else
       self.users.where('users.account=?', value).first
     end

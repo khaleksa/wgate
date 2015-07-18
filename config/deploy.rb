@@ -7,7 +7,7 @@ load 'config/recipes/unicorn.rb'
 application = 'paysys'
 
 set :application, application
-set :repo_url, 'git@bitbucket.org:khaleksa/paysys.git'
+set :repo_url, 'git@bitbucket.org:ctrl-plus/paysys.git'
 
 set :rvm_type, :system
 set :rvm_user, 'bob'
