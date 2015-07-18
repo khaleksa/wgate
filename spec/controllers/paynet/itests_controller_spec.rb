@@ -12,7 +12,7 @@ describe Paynet::ItestsController do
                                         paynet_params: {user_name: user_tom, password: psw_tom},
                                         weak_account_verification: true) }
   let!(:user_account) { '901234567' }
-  let!(:long_user_account) { "+998#{user_account}" }
+  let!(:long_user_account) { "998#{user_account}" }
   let!(:user) { FactoryGirl.create(:user, provider_id: provider.id, account: long_user_account, first_name: 'Bob', last_name: 'John') }
 
   let(:remote_ip) { '213.230.106.113' }
@@ -51,7 +51,7 @@ describe Paynet::ItestsController do
         expect(transaction.service_id).to eq(1)
         expect(transaction.commited?).to be_truthy
         expect(transaction.amount).to eq(150000)
-        expect(transaction.account_id).to eq(user_account)
+        expect(transaction.account_id).to eq(long_user_account)
         expect(transaction.user_name).to eq(user_tom)
         expect(transaction.password).to eq(psw_tom)
       end

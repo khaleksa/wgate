@@ -58,7 +58,8 @@ module Paynet
       account = method_arguments['parameters']['paramValue'].strip
       if provider.weak_account_verification
         account = account.gsub(/^[+]/, '')
-        account = account.gsub(/^998/, '') if account.length == 12
+        account = account.gsub(/[^\d]+/,'')
+        account = '998' + account if account.length == 9
       end
       account
     end

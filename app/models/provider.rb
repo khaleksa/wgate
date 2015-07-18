@@ -7,11 +7,6 @@ class Provider < ActiveRecord::Base
   validates_uniqueness_of :name
 
   def find_user_by_account(value)
-    if self.weak_account_verification
-      value = value.gsub(/[^\d]+/,'')
-      value = '998' + value if value.length < 12
-      return nil if value.length != 12
-    end
     self.users.where('users.account=?', value).first
   end
 
