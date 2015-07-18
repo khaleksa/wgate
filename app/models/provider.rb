@@ -8,16 +8,11 @@ class Provider < ActiveRecord::Base
 
   def find_user_by_account(value)
     if self.weak_account_verification
-      # self.users.where("account like '%#{value}'").first
       value = value.gsub(/[^\d]+/,'')
       value = '998' + value if value.length < 12
-      if value.length == 12
-        self.users.where('users.account=?', value).first
-      else
-        return nil
-    else
-      self.users.where('users.account=?', value).first
+      return nil if value.length != 12
     end
+    self.users.where('users.account=?', value).first
   end
 
   def valid_psw_hash?(psw_hash)
