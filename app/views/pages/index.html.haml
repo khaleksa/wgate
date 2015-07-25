@@ -20,6 +20,10 @@
   %h2.sub-header Payments for itest.uz
   %hr
 
+  .total-amount
+    %h4
+      Total amount = #{@total_amount}
+      
   .table-responsive
     %table.table.table-striped
       %thead
@@ -38,6 +42,3 @@
             %td= payment.account_id
             %td= payment.amount
 
-  .total-amount
-    %h4
-      Total amount = #{@total_amount}

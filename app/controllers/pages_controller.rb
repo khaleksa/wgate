@@ -5,11 +5,11 @@ class PagesController < ApplicationController
   force_ssl if: :ssl_configured?
 
   def index
-    @payments = Payment.where(provider_id: 3, status: 'commited').order(:created_at)
+    @payments = Payment.where(provider_id: 3, status: 'commited').order(created_at: :desc)
     @total_amount = @payments.pluck(:amount).sum
   end
 
   def access_errors
-    @account_errors = AccessError.where(provider_id: 3).order(:created_at)
+    @account_errors = AccessError.where(provider_id: 3).order(created_at: :desc)
   end
 end
