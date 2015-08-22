@@ -1,4 +1,5 @@
 class PagesController < ApplicationController
+  
   http_basic_authenticate_with name: "pays", password: "system"
 
   skip_before_action :verify_authenticity_token
@@ -12,4 +13,5 @@ class PagesController < ApplicationController
   def access_errors
     @account_errors = AccessError.where(provider_id: 3).order(created_at: :desc)
   end
+
 end

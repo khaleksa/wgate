@@ -20,6 +20,8 @@ module Builder
       result = HTTParty.post(provider.sync_user_url,
                              body: params,
                              headers: { 'Content-Type' => 'application/json' })
+      puts params
+      puts result
       raise RuntimeError, result.parsed_response if result.code >= 400
 
       create_or_delete(result.parsed_response.to_a)

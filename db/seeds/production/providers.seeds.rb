@@ -11,9 +11,9 @@ Provider.seed(:id,
               {
                   id: 2,
                   name: 'tom',
-                  password: '123456',
-                  sync_transaction_url: '',
-                  sync_user_url: '',
+                  password: '123mvkghp;old6456',
+                  sync_transaction_url: 'http://tom.uz/ru/pays/add-payment',
+                  sync_user_url: 'http://tom.uz/ru/pays/users',
                   click_params: { secret_key: '' },
                   paynet_params: { user_name: 'TomUz2014', password: 'tom10v000317' }
               },
