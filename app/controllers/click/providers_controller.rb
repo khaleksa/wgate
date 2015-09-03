@@ -14,4 +14,10 @@ class Click::ProvidersController < Click::BasesController
     set_provider(3)
     sync
   end
+
+  def scud
+    set_provider(4)
+    sync
+  end
+
 end

@@ -22,11 +22,16 @@ Rails.application.routes.draw do
       get :wsdl
       post :action
     end
+    resource :scud, only: [] do
+      get :wsdl
+      post :action
+    end    
   end
 
   namespace :click do
     post :tom, to: 'providers#tom'
     post :erkatoy, to: 'providers#erkatoy'
     post :itest, to: 'providers#itest'
+    post :scud, to: 'providers#scud'
   end
 end
