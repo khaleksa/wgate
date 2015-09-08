@@ -10,9 +10,8 @@ describe Paynet::ScudsController do
   let(:psw_tom) { '123456' }
   let!(:provider) { FactoryGirl.create(:provider, id: 4, name: 'scud', password: 'scud_psw',
                                         paynet_params: {user_name: user_tom, password: psw_tom} ) }
-  let!(:user_account) { '901234567' }
-  let!(:long_user_account) { "998#{user_account}" }
-  let!(:user) { FactoryGirl.create(:user, provider_id: provider.id, account: long_user_account, first_name: 'Bob', last_name: 'John') }
+  let!(:user_account) { '998901234567' }
+  let!(:user) { FactoryGirl.create(:user, provider_id: provider.id, account: user_account, first_name: 'Bob', last_name: 'John') }
 
   let(:remote_ip) { '213.230.106.113' }
   let(:client) { Savon::Client.new({ :wsdl => "http://application/paynet/scud/wsdl" }) }
@@ -27,7 +26,7 @@ describe Paynet::ScudsController do
           password: psw_tom,
           username: user_tom,
           amount: 150000,
-          parameters: { paramKey: 'account_id', paramValue: long_user_account },
+          parameters: { paramKey: 'account_id', paramValue: user_account },
           serviceId: 1,
           transactionId: 437,
           transactionTime: '2011-04-26T18:07:22'
@@ -50,7 +49,7 @@ describe Paynet::ScudsController do
         expect(transaction.service_id).to eq(1)
         expect(transaction.commited?).to be_truthy
         expect(transaction.amount).to eq(150000)
-        expect(transaction.account_id).to eq(long_user_account)
+        expect(transaction.account_id).to eq(user_account)
         expect(transaction.user_name).to eq(user_tom)
         expect(transaction.password).to eq(psw_tom)
       end
@@ -98,20 +97,20 @@ describe Paynet::ScudsController do
     end
     let!(:response) { client.call(:cancel_transaction, message: params) }
     let(:cancel_transaction_result) { response.body[:cancel_transaction_result] }
-  
+
     it 'returns valid response' do
       expect(cancel_transaction_result[:error_msg]).to eq 'Success.'
       expect(cancel_transaction_result[:status].to_i).to eq 0
       expect(cancel_transaction_result.include?(:time_stamp)).to be_truthy
       expect(cancel_transaction_result[:transaction_state].to_i).to eq(2)
     end
-  
+
     it 'cancel Payment Transaction state status' do
       transaction.reload
       expect(transaction.cancelled?).to be_truthy
     end
   end
-  
+
   describe 'soap method: CheckTransaction' do
     let(:transaction_id) { '123456' }
     let(:status_ok) { 0 }
@@ -129,7 +128,7 @@ describe Paynet::ScudsController do
     end
     let(:response) { client.call(:check_transaction, message: params) }
     let(:response_data) { response.body[:check_transaction_result] }
-  
+
     it 'returns valid response' do
       expect(response_data[:error_msg]).to eq status_ok_msg
       expect(response_data[:status].to_i).to eq status_ok
@@ -145,7 +144,7 @@ describe Paynet::ScudsController do
     let!(:transaction_1) { create_paynet_transaction_at(4.days.ago, paynet_id: 111, account_id: user_account, provider_id: provider.id, amount: 1000) }
     let!(:transaction_2) { create_paynet_transaction_at(3.days.ago, paynet_id: 222, account_id: user_account, provider_id: provider.id, amount: 2000) }
     let!(:transaction_3) { create_paynet_transaction_at(1.days.ago, paynet_id: 333, account_id: user_account, provider_id: provider.id, amount: 3000) }
-  
+
     let(:params) do
       {
           password: psw_tom,
@@ -159,13 +158,13 @@ describe Paynet::ScudsController do
     end
     let!(:response) { client.call(:get_statement, message: params) }
     let(:response_data) { response.body[:get_statement_result] }
-  
+
     it 'returns valid response' do
       expect(response_data[:error_msg]).to eq 'Success.'
       expect(response_data[:status].to_i).to eq 0
       expect(response_data.include?(:time_stamp)).to be_truthy
     end
-  
+
     let(:statements) { response_data[:statements] }
     it 'returns transaction data' do
       expect(statements.size).to eq(2)
@@ -177,7 +176,7 @@ describe Paynet::ScudsController do
                                 )
     end
   end
-  
+
   describe 'soap method: GetInformation' do
     let(:params) do
       {
